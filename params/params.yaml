@@ -64,12 +64,27 @@ aero:
   CL_alpha: 4.9       # /rad [estimated] ±30%
   CL_max: 1.2         # [estimated] clean
   CL_max_flaps: 1.4   # [estimated] with flaps
-  CD0: 0.05           # [estimated] ±30%
+  CD0: 0.05           # [estimated] ±30% aircraft-level, referenced to wing area
   oswald_e: 0.80      # [estimated]
   stall_speed: 11.5   # m/s [estimated] at max lift
   transition_speed: 14.0  # m/s [estimated] blend midpoint
   cruise_speed: 17.0  # m/s [estimated]
   L_over_D: 8.0       # [estimated]
+  # Phase 2 additions (component buildup)
+  CL0: 0.20           # [assumed] camber lift at alpha=0
+  wing_incidence_deg: 2.0  # [assumed] rigging angle, fuselage level at cruise
+  Cm_ac: -0.05        # [assumed] wing pitching moment about AC
+  alpha_stall_deg: 11.7    # [derived] (CL_max - CL0)/CL_alpha
+  stall_blend_M: 30.0      # [assumed] sigmoid sharpness for post-stall blend
+  CLa_tail: 4.0       # /rad [assumed] stab stubs, low AR
+  tail_downwash: 0.30 # [assumed] d(epsilon)/d(alpha)
+  elevator_tau: 0.50  # [assumed] flap effectiveness
+  CYb_fin: -2.6       # /rad [assumed] per fin, referenced to fin area
+  rudder_tau: 0.50    # [assumed]
+  aileron_tau: 0.45   # [assumed]
+  slipstream_decay: 1.6    # [assumed] induced-velocity factor at the wing (1..2)
+  notch_open_dCD: 0.004    # [assumed] drag increment, cover flaps open
+  flap_dCL: 0.2       # [assumed] flap increment (flaps optional, off by default)
 
 # --- Propulsion ---
 propulsion:
@@ -85,6 +100,13 @@ propulsion:
   battery_capacity_wh: 111.0     # Wh [assumed] 6S 5000 mAh
   hover_power: 560.0     # W [estimated]
   cruise_power: 130.0    # W [estimated]
+  # Phase 2 additions
+  battery_voltage_full: 25.2     # V [standard] 6S fully charged
+  battery_voltage_empty: 21.0    # V [standard] 6S safe floor
+  battery_internal_R: 0.020      # ohm [assumed] pack internal resistance
+  motor_efficiency: 0.75         # [assumed] electrical->mechanical
+  figure_of_merit: 0.55          # [assumed] prop hover FM for power estimate
+  prop_spin: [1, -1, 1]          # [assumed] left CCW(+z), right CW(-z), tail CCW
 
 # --- Tilt Limits ---
 tilt:
