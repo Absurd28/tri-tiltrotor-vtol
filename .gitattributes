@@ -1,0 +1,4 @@
+# Force LF for all text files (project runs on WSL/Linux)
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
