@@ -127,3 +127,20 @@ simulation:
 world:
   frame: ENU               # z-up [assumed]
   body_frame: FLU          # x-forward y-left z-up [assumed]
+
+# --- Model layout (Phase 1, used by model/build_mjcf.py) ---
+layout:
+  wing_z: 0.07             # m [assumed] high wing, top of fuselage
+  nacelle_hub_z: 0.07      # m [assumed] nacelle tilt axle at wing plane
+  prop_offset_wing: 0.06   # m [assumed] hub to prop disc along motor axis
+  tail_hub_z: 0.0          # m [assumed] tail axle at boom height
+  prop_offset_tail: 0.055  # m [assumed]
+  boom_y: 0.195            # m [estimated] boom centreline (0.42 m outer sep, 0.03 m wide booms)
+  skid_z: -0.135           # m [assumed]
+  battery_z: -0.045        # m [assumed] battery slung low to pull CG down
+  battery_x_range: [0.06, 0.10]   # m [design] battery bay limits ahead of CG
+  payload_z_range: [-0.06, 0.0]   # m [assumed] belly bay depth (hatch below)
+  avionics_nose_x: 0.325   # m [assumed] nose electronics bay centre (inboard
+                           # enough to keep Iyy near budget; battery solves ~0.098)
+  avionics_fc_mass: 0.05   # kg [assumed] FC+IMU kept at CG
+  rear_servo_x: -0.18      # m [assumed] elevator/rudder servos in fuselage (pushrods)

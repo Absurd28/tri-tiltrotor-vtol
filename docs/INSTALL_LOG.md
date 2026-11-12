@@ -1,4 +1,4 @@
-# INSTALL_LOG.md
+﻿# INSTALL_LOG.md
 
 All installations for the Tilt-Tri-Rotor VTOL Drone simulation project.
 
@@ -13,7 +13,7 @@ All installations for the Tilt-Tri-Rotor VTOL Drone simulation project.
 unsigned DLLs from PyPI, including MuJoCo, NumPy, SciPy. SAC cannot be bypassed with
 `Unblock-File`. WSL2 (Linux) has no such restriction.
 
-**Why Python 3.11?** MuJoCo 3.x and Stable-Baselines3 have wheels for 3.10–3.12.
+**Why Python 3.11?** MuJoCo 3.x and Stable-Baselines3 have wheels for 3.10â€“3.12.
 Ubuntu 26.04's default Python is 3.14, which is too new. Python 3.11 chosen for maximum
 pre-built-wheel availability.
 
@@ -40,10 +40,10 @@ pre-built-wheel availability.
 | torch (cu124) | (pending) | download.pytorch.org | Deep learning, CUDA 12.4 | ~2.5 GB |
 | torchvision | (pending) | download.pytorch.org | Required by SB3 | ~100 MB |
 | torchaudio | (pending) | download.pytorch.org | Required by SB3 | ~100 MB |
-| ffmpeg | (pending) | Ubuntu apt or conda-forge | Video rendering | ~100 MB |
+| ffmpeg | 5.1 | conda-forge | Video rendering | ~100 MB |
 
 **Python from python.org (Windows):** Also installed 3.11.9 via winget for Windows testing,
-but unused — all simulation work runs in WSL2.
+but unused â€” all simulation work runs in WSL2.
 
 ## Notes
 

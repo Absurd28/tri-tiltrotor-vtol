@@ -87,3 +87,72 @@ reduces compute load while still being faster than the drone's attitude dynamics
 (~10–20 Hz).
 
 ---
+
+## D-06: Six surface actuators in MJCF, three virtual surfaces in software
+
+**Decision:** The MJCF has 6 position actuators (aileron L/R, elevator L/R, rudder L/R).
+The control layer exposes 3 virtual commands (aileron, elevator, rudder) and maps them
+to the 6 servos (ailerons opposite-sign, elevator/rudder pairs same-sign).
+
+**Reason:** MuJoCo tendon-coupled actuators would leave the differential mode of each
+surface pair uncontrolled (floating) unless extra joint springs are added. Separate
+actuators are simpler, and the virtual mapping lives in the mixer where it belongs.
+The 9-dim action space from the brief (3 throttle + 3 tilt + 3 surfaces) is assembled
+at the control/RL layer.
+
+---
+
+## D-07: Elevator and rudder servos inside the rear fuselage (pushrod drive)
+
+**Decision:** The 4 tail-surface servos (48 g) sit at x = -0.18 m in the fuselage and
+drive the surfaces through pushrods, instead of sitting at the surfaces (x ≈ -0.55).
+
+**Reason:** CG balance. With servos at the tail, the battery balance point moves to
+x = 0.18 m — far outside the 0.06–0.10 m battery bay. Pushrod-driven tail surfaces are
+standard practice in RC aircraft for exactly this reason. Also reduces Iyy by ~0.013 kg·m².
+
+---
+
+## D-08: Avionics split: FC+IMU at CG, remaining electronics in the nose
+
+**Decision:** 50 g (flight controller + IMU) at the CG; 220 g (companion computer, GPS,
+sensors, wiring) in a nose bay at x = 0.325 m.
+
+**Reason:** The tail group (motor+prop+axle+linkage ≈ 0.28 kg at x ≈ -0.4 m) needs forward
+mass to balance. The battery alone cannot do it within its 6–10 cm bay. The IMU stays at
+the CG where it measures cleanly. Nose bay x = 0.325 was tuned so Iyy stays within 10%
+of budget (at x = 0.40 it was +13.9%).
+
+---
+
+## D-09: Nose skid added
+
+**Decision:** A small third skid under the nose (10 g), in addition to the two boom skids.
+
+**Reason:** The boom skids sit entirely behind the CG (booms span x -0.15 to -0.62);
+on the ground the drone would tip nose-down. Three-point stance is statically stable.
+
+---
+
+## D-10: MJCF primitives instead of CadQuery meshes (Phase 1)
+
+**Decision:** The model is built from boxes, cylinders and capsules generated
+parametrically from params.yaml, not STL meshes.
+
+**Reason:** Primitives are parametric (one source of truth in params.yaml), compile
+instantly, give exact analytic inertia, and make clearance/collision checks fast and
+robust. Meshes add visual fidelity only; aerodynamics are analytic anyway. CadQuery
+meshes remain an option for the report/presentation later.
+
+---
+
+## D-11: Notch front wall position fixed from the spec
+
+**Decision:** The bulkhead (notch front wall) is placed so its notch-facing surface is at
+x = -0.21 m, exactly 0.19 m ahead of the tail hub (-0.40 m).
+
+**Reason:** First placement had the box centred at -0.222 m, putting the wall face 2.4 cm
+too close to the prop — the tilt-sweep clearance check caught it (0.26 cm min clearance vs
+1.52 cm target; now 2.66 cm). Good example of why the acceptance checks exist.
+
+---
