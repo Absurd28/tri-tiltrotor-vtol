@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+
+# Conda env (lives in WSL home, not here)
+.conda_env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Project artifacts
+runs/
+logs/
+checkpoints/
+*.zip
+*.onnx
+videos/
+eval_results/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/settings.json
+.idea/
+
+# Temp
+*.tmp
+*.bak
+docs/_install_sb3.sh

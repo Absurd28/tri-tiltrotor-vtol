@@ -1,0 +1,30 @@
+# Pinned requirements for Tilt-Tri-Rotor VTOL drone simulation
+# Generated 2026-11-12. Run in: WSL2 Ubuntu 26.04, conda env drone311 (Python 3.11.18)
+# Install: source ~/miniconda3/bin/activate drone311 && pip install -r requirements.txt
+# Note: torch and CUDA packages are auto-resolved by stable-baselines3
+
+# Core science
+numpy==2.4.6
+scipy==1.17.1
+matplotlib==3.11.2
+pandas==3.1.1
+PyYAML>=6.0
+pytest>=8.0
+
+# Simulation
+mujoco==3.17.0
+gymnasium==1.4.0
+
+# RL
+stable-baselines3==2.9.2
+tensorboard==2.21.0
+
+# Export and inference
+onnx==1.23.2
+onnxruntime-gpu==1.31.1
+
+# Deep learning (auto-pulls torch==2.15.0+cu132 and CUDA 13.2 packages via SB3 dep)
+# To install torch separately: pip install torch==2.15.0 (CUDA bundled)
+
+# ffmpeg: installed via conda-forge (conda install -n drone311 ffmpeg -c conda-forge)
+# Version: 5.1

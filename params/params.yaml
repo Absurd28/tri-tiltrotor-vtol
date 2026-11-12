@@ -1,0 +1,129 @@
+# Tilt-Tri-Rotor VTOL Drone Parameters
+# Tags: [measured] = lab measurement, [estimated] = model/calculation, [assumed] = project default
+
+vehicle:
+  name: tilt_tri_rotor_vtol
+  total_mass: 3.527  # kg [estimated] mass budget sum
+
+# --- Geometry (metres, x=forward from CG, y=left, z=up) ---
+geometry:
+  # Wing
+  wing_span: 1.60      # m [estimated] design spec
+  wing_chord: 0.22     # m [estimated] design spec
+  wing_area: 0.352     # m² [estimated] span * chord
+  wing_aspect_ratio: 7.27  # [estimated] span²/area
+  wing_le_x: 0.07      # m [estimated] leading edge x from CG
+  wing_te_x: -0.15     # m [estimated] trailing edge x from CG
+
+  # Motor positions (hub centres)
+  motor_left_x: 0.20   # m [estimated]
+  motor_left_y: 0.40   # m [estimated]
+  motor_right_x: 0.20  # m [estimated]
+  motor_right_y: -0.40 # m [estimated]
+  motor_tail_x: -0.40  # m [estimated]
+  motor_tail_y: 0.0    # m [estimated]
+
+  # Fuselage
+  nose_x: 0.45         # m [estimated]
+  tail_notch_front_x: -0.21  # m [estimated] 0.19 m ahead of tail hub
+  tail_notch_radius: 0.171   # m [estimated]
+  boom_separation: 0.42      # m [estimated] outer edge
+
+  # Tail surfaces
+  stabilizer_x: -0.55  # m [estimated]
+  stabilizer_area_each: 0.035  # m² [estimated]
+  fin_area_each: 0.02   # m² [estimated]
+  boom_tip_x: -0.62    # m [estimated]
+  overall_length: 1.10  # m [estimated]
+
+# --- Mass Budget (kg) ---
+mass:
+  payload: 0.500        # kg [assumed] default 500 g
+  battery: 0.700        # kg [assumed] 6S 5000 mAh
+  wing: 0.480           # kg [estimated]
+  fuselage_skids: 0.400 # kg [estimated]
+  booms_fins_stab: 0.250 # kg [estimated]
+  motors: 0.420         # kg [estimated] 3x 140 g
+  props: 0.060          # kg [estimated]
+  escs: 0.090           # kg [estimated]
+  tilt_servos: 0.135    # kg [estimated] 3 servos
+  surface_servos: 0.072 # kg [estimated] 6 servos
+  nacelle_hardware: 0.080  # kg [estimated]
+  tail_axle_linkage: 0.070 # kg [estimated]
+  avionics_sensors: 0.270  # kg [estimated]
+  total: 3.527          # kg [estimated] sum of above
+
+# --- Inertia (kg·m², about CG) ---
+inertia:
+  Ixx: 0.224  # kg·m² roll [estimated]
+  Iyy: 0.167  # kg·m² pitch [estimated]
+  Izz: 0.391  # kg·m² yaw [estimated]
+
+# --- Aerodynamics ---
+aero:
+  CL_alpha: 4.9       # /rad [estimated] ±30%
+  CL_max: 1.2         # [estimated] clean
+  CL_max_flaps: 1.4   # [estimated] with flaps
+  CD0: 0.05           # [estimated] ±30%
+  oswald_e: 0.80      # [estimated]
+  stall_speed: 11.5   # m/s [estimated] at max lift
+  transition_speed: 14.0  # m/s [estimated] blend midpoint
+  cruise_speed: 17.0  # m/s [estimated]
+  L_over_D: 8.0       # [estimated]
+
+# --- Propulsion ---
+propulsion:
+  prop_diameter: 0.3048  # m [assumed] 12-inch
+  prop_pitch_in: 6.5     # inches [assumed] mid of 12x6–12x7 range
+  kT: 2.6e-5             # N/(rad/s)² [estimated] ±30%
+  kQ_over_kT: 0.0175     # m [estimated] mid of 0.015–0.02 range
+  motor_lag: 0.07        # s [estimated] first-order time constant
+  hover_thrust_per_motor: 11.57  # N [estimated] 1.18 kgf per motor
+  max_thrust_per_motor: 20.60    # N [estimated] 2.1 kgf per motor
+  max_omega: 889.0       # rad/s [estimated] sqrt(max_thrust/kT)
+  battery_voltage_nominal: 22.2  # V [assumed] 6S
+  battery_capacity_wh: 111.0     # Wh [assumed] 6S 5000 mAh
+  hover_power: 560.0     # W [estimated]
+  cruise_power: 130.0    # W [estimated]
+
+# --- Tilt Limits ---
+tilt:
+  wing_min_deg: 0.0    # deg [assumed] thrust up = hover
+  wing_max_deg: 90.0   # deg [assumed] thrust forward = cruise
+  tail_min_deg: 0.0    # deg [assumed]
+  tail_max_deg: 30.0   # deg [assumed] forward
+  servo_rate_limit: 120.0  # deg/s [estimated]
+  servo_lag: 0.05      # s [estimated] first-order
+  backlash_deg: 0.5    # deg [estimated]
+
+# --- Control Surfaces ---
+surfaces:
+  aileron_range_deg: 20.0   # ±deg [assumed]
+  elevator_range_deg: 20.0  # ±deg [assumed]
+  rudder_range_deg: 25.0    # ±deg [assumed]
+  servo_rate_limit: 120.0   # deg/s [assumed]
+
+# --- Sensors ---
+sensors:
+  imu_accel_noise: 0.001   # m/s² std [estimated]
+  imu_gyro_noise: 0.0005   # rad/s std [estimated]
+  imu_accel_bias: 0.0005   # m/s² [estimated]
+  imu_gyro_bias: 0.0001    # rad/s [estimated]
+  baro_noise: 0.1          # m std [estimated]
+  pitot_noise: 0.2         # m/s std [estimated]
+  gps_pos_noise: 0.5       # m std [estimated]
+  gps_vel_noise: 0.05      # m/s std [estimated]
+  range_max: 10.0          # m [assumed]
+  range_noise: 0.02        # m std [estimated]
+
+# --- Simulation ---
+simulation:
+  physics_dt: 0.002        # s = 500 Hz [assumed]
+  control_dt: 0.01         # s = 100 Hz [assumed]
+  gravity: 9.81            # m/s² [standard]
+  air_density: 1.225       # kg/m³ [standard ISA]
+
+# --- World ---
+world:
+  frame: ENU               # z-up [assumed]
+  body_frame: FLU          # x-forward y-left z-up [assumed]
