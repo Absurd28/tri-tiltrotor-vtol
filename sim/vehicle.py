@@ -97,6 +97,7 @@ class Vehicle:
         for mtr in self.motors:
             mtr.reset()
         self.battery.energy_J = self.battery.capacity_J
+        self.v_batt = self.battery.v_oc()   # no state leak across episodes
         self.servos.reset()
         self.wind.reset(seed)
         self.sensors.reset(seed)
