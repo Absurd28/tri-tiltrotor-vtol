@@ -31,14 +31,13 @@ bash /tmp/miniconda.sh -b -p ~/miniconda3
 source ~/miniconda3/bin/activate drone311
 cd /mnt/c/Users/<YOUR_USERNAME>/Desktop/Drone_7th_sem  # adjust path
 
-pip install numpy scipy matplotlib pandas pyyaml pytest
-pip install "mujoco>=3.2,<4" "gymnasium>=1.0,<2"
-pip install stable-baselines3 tensorboard onnx onnxruntime-gpu
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
+pip install -r requirements.txt          # pinned versions (torch comes with SB3)
 
-# 4. Install ffmpeg (needs sudo)
-sudo apt-get install -y ffmpeg
+# 4. ffmpeg for videos (no sudo needed)
+conda install -n drone311 ffmpeg -c conda-forge -y
 ```
+
+Exact versions actually installed are logged in `docs/INSTALL_LOG.md`.
 
 ### Every session
 
@@ -58,6 +57,28 @@ alias drone='source ~/miniconda3/bin/activate drone311 && cd /mnt/c/Users/<YOUR_
 ```bash
 pytest                     # all tests
 pytest tests/test_smoke.py # smoke test only
+```
+
+### Reproduce every result in the report
+
+All seeds are fixed; each command regenerates one table/figure.
+
+```bash
+python scripts/check_model.py                       # Phase 1 acceptance (mass/CG/inertia/clearance)
+MUJOCO_GL=egl python scripts/render_views.py        # docs/renders/*.png
+pytest -m "not slow"                                # physics + env tests (fast)
+pytest                                              # + full baseline missions (slow)
+python control/trim.py                              # eval/trim_table.csv, eval/tilt_corridor.png
+python eval/run_mission.py --tag calm               # eval/baseline_metrics.csv row + eval/mission_calm.png
+python eval/run_mission.py --tag wind5 --wind 5
+python eval/run_mission.py --tag cg0.02 --cg-shift 0.02
+MUJOCO_GL=egl python eval/run_mission.py --tag video --video docs/videos/mission_calm.mp4
+# RL (≈5.5 h on a laptop for the full chain, see C:/Temp/chain.sh equivalent below)
+python rl/train.py --task hover    --steps 1000000 --name s1_hover    --dr
+python rl/train.py --task waypoint --steps 2500000 --name s2_waypoint --dr --init runs/s1_hover/final.zip
+python rl/train.py --task obstacle --steps 2500000 --name s5_obstacle --dr --difficulty 0.4 --init runs/s2_waypoint/final.zip
+bash scripts/evaluate_all.sh                        # eval/rl_metrics.csv (50 seeded episodes each)
+python rl/export_onnx.py runs/s5_obstacle/final.zip # ONNX + parity check
 ```
 
 ### Run MuJoCo viewer (requires display / VcXsrv on Windows)

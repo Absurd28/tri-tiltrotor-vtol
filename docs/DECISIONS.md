@@ -232,3 +232,30 @@ high-reward episodes. With a one-night training budget the choice is clear-cut.
 Direct control remains an ablation candidate with a much larger budget.
 
 ---
+
+## D-16: Residual policy initialised to zero output with small exploration noise
+
+**Decision:** For mode B the PPO actor's output layer is zero-initialised (weights
+and bias), so the untrained policy outputs exactly zero residual = the baseline
+controller. Initial exploration std 0.1 (log_std −2.3, SB3 default is 1.0),
+learning rate 1e-4.
+
+**Evidence (diagnosed on day 2):** the first overnight S1 run used SB3 defaults.
+At 600k steps it crashed 9/10 deterministic hover episodes, while the baseline
+alone succeeds 10/10 (reward 675). Measured sensitivity of the baseline to pure
+Gaussian residual noise (8 DR episodes each, `C:/Temp/noise_test.py` logic):
+
+| noise std | 0 | 0.05 | 0.1 | 0.2 | (1.0 = SB3 default) |
+|---|---|---|---|---|---|
+| hover success | 100 % | 62 % | 0 % | 0 % | crashes |
+| mean reward | 666 | 577 | 361 | 301 | |
+
+With std 1.0 every rollout is a crash, the value function learns "everything is
+bad" and the policy mean drifts away from zero. After the fix, a std-0.2 run at
+100k steps scored 10/10 deterministic (reward 672). The failed run is kept in
+`runs/s1_hover_v0/` as evidence.
+
+**Viva angle:** residual RL only inherits the baseline's safety if the residual
+starts at zero *and* exploration is smaller than the baseline's error tolerance.
+
+---

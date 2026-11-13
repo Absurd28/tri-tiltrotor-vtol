@@ -39,6 +39,9 @@ def main():
     ap.add_argument("--n-envs", type=int, default=6)
     ap.add_argument("--dr", action="store_true")
     ap.add_argument("--difficulty", type=float, default=0.3)
+    ap.add_argument("--log-std-init", type=float, default=-1.6,
+                    help="initial log std of the Gaussian policy (-1.6 -> 0.2)")
+    ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--resume", action="store_true")
     ap.add_argument("--init", type=str, default=None,
                     help="warm start from this policy zip")
@@ -72,12 +75,17 @@ def main():
         model = PPO(
             "MlpPolicy", env, device=device, seed=args.seed,
             n_steps=1024, batch_size=1536, n_epochs=10,
-            learning_rate=3e-4, gamma=0.99, gae_lambda=0.95,
+            learning_rate=args.lr, gamma=0.99, gae_lambda=0.95,
             clip_range=0.2, ent_coef=0.003,
-            policy_kwargs=dict(net_arch=[128, 128]),
+            policy_kwargs=dict(net_arch=[128, 128], log_std_init=args.log_std_init),
             tensorboard_log=str(ROOT / "runs" / "tb"),
             verbose=1,
         )
+        if args.mode == "B":
+            # residual starts at exactly zero = the baseline controller (D-16)
+            with torch.no_grad():
+                model.policy.action_net.weight.zero_()
+                model.policy.action_net.bias.zero_()
 
     ckpt = CheckpointCallback(save_freq=max(100_000 // args.n_envs, 1),
                               save_path=str(run_dir), name_prefix="ckpt")
