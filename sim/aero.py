@@ -181,6 +181,8 @@ class WingAero:
             F_fus = -0.5 * self.rho * V * v_air_b * cd0 * self.S
             out.append((F_fus, np.zeros(3)))
 
-        # wing camber pitching moment about the wing AC (pure torque, body y)
-        tq = np.array([0.0, q_dyn_ref * self.S * self.chord * self.Cm_ac, 0.0])
+        # wing camber pitching moment: aero convention has +Cm = nose-up, and
+        # in FLU nose-up is NEGATIVE M_y, so the body torque is -q*S*c*Cm.
+        # (Cm_ac = -0.05 therefore gives the physical nose-DOWN camber moment.)
+        tq = np.array([0.0, -q_dyn_ref * self.S * self.chord * self.Cm_ac, 0.0])
         return out, tq

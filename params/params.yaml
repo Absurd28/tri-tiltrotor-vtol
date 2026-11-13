@@ -150,6 +150,34 @@ world:
   frame: ENU               # z-up [assumed]
   body_frame: FLU          # x-forward y-left z-up [assumed]
 
+# --- Baseline controller (Phase 3) ---
+control:
+  # cascade bandwidths (rad/s), poles separated ~2x per loop [assumed]
+  rate_bw: 8.0
+  att_bw: 4.0
+  vel_bw: 1.2
+  pos_bw: 0.6
+  rate_ki: 2.0            # integral on rate loop (per s)
+  vel_ki: 0.3
+  max_tilt_angle_cmd: 0.35   # rad, max attitude lean in hover [assumed]
+  max_vel_xy: 4.0         # m/s hover translation speed limit
+  max_vel_z: 2.0          # m/s climb limit
+  climb_rate: 1.5         # m/s mission climb
+  descent_rate: 0.7       # m/s landing descent
+  # transition schedules (airspeed, m/s)
+  tilt_schedule_v: [4.0, 14.0]    # wing tilt 0->90 deg over this band
+  mixer_blend_v: [8.0, 14.0]      # motor-moments -> surface-moments blend
+  tail_fade_v: [10.0, 13.0]       # tail throttle fades to 0 over this band
+  cruise_speed_cmd: 17.0
+  # cruise loops
+  cruise_thr_kp: 0.06     # throttle per m/s airspeed error
+  cruise_thr_ki: 0.02
+  cruise_alt_kp: 0.06     # pitch cmd (rad) per m altitude error
+  cruise_alt_vz_kp: 0.10  # pitch cmd per m/s climb-rate error
+  cruise_pitch_max: 0.26  # rad (15 deg)
+  heading_kp: 1.2         # roll cmd per rad heading error (cruise)
+  cruise_roll_max: 0.52   # rad (30 deg)
+
 # --- Model layout (Phase 1, used by model/build_mjcf.py) ---
 layout:
   wing_z: 0.07             # m [assumed] high wing, top of fuselage

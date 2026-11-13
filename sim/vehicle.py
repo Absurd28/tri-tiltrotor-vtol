@@ -175,10 +175,16 @@ class Vehicle:
                                   d.qfrc_applied)
                 if i < 2:  # wing-prop slipstream over the wing
                     vi = mtr.induced_velocity(T, self.aero.rho,
-                                              self.battery.disk_area)
+                                              self.battery.disk_area,
+                                              float(np.linalg.norm(v_air_b)))
                     tilt = d.qpos[self.jadr["j_nacelle_left" if i == 0
                                             else "j_nacelle_right"]]
-                    frac = 0.1 + 0.9 * np.sin(tilt)
+                    # geometric overlap of the slipstream tube with the wing:
+                    # the disc sits 0.13 m AHEAD of the LE, so at low/mid tilt
+                    # the wake passes mostly in front of the wing; sin^2 keeps
+                    # mid-tilt wash moderate (sin was strong enough to cancel
+                    # the differential-thrust roll authority - see debug_roll)
+                    frac = 0.08 + 0.92 * np.sin(tilt)**2
                     vs = self.p["aero"]["slipstream_decay"] * vi * frac
                     axis_b = R_bw.T @ axis_w
                     slip.append((+1 if i == 0 else -1, vs, axis_b))

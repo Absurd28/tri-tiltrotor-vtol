@@ -54,9 +54,15 @@ class Motor:
         q_reaction = -self.spin * self.kQ * self.omega**2
         return thrust, q_reaction
 
-    def induced_velocity(self, thrust: float, rho: float, disk_area: float) -> float:
-        """Momentum-theory induced velocity at the disc (hover formula)."""
-        return float(np.sqrt(max(thrust, 0.0) / (2 * rho * disk_area)))
+    def induced_velocity(self, thrust: float, rho: float, disk_area: float,
+                         airspeed: float = 0.0) -> float:
+        """Momentum-theory induced velocity at the disc with forward-speed
+        correction (Glauert): vi = vi_hover^2 / sqrt(V^2 + vi_hover^2).
+        Reduces to the hover value at V=0 and to T/(2*rho*A*V) at high speed.
+        Without this the slipstream wash over the wing is several times too
+        strong in transition, which killed the roll authority."""
+        vi_h2 = max(thrust, 0.0) / (2 * rho * disk_area)
+        return float(vi_h2 / np.sqrt(airspeed**2 + vi_h2))
 
 
 class Battery:

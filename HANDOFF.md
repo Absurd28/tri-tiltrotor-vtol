@@ -1,29 +1,40 @@
 # HANDOFF.md
 
-## Phase 1: Modelling, 3D and MuJoCo — COMPLETE (2026-11-12)
+## Phase 3: Trim and baseline controller — COMPLETE (2026-11-13)
 
 ### Done
-- model/build_mjcf.py: parametric MJCF generator from params.yaml
-  - 52 geoms, every mass-budget line item placed physically
-  - battery x and payload z SOLVED for CG (battery=0.0967 m, payload z=-0.06 m)
-  - 3 tilt hinges (wing 0-90 deg, tail 0-30 deg) + 6 surface hinges, 9 position actuators
-  - thrust sites (left/right/tail), imu/pitot/rangefinder sites + sensors
-- model/vtol.xml: generated model (committed), model_info.yaml traceability
-- sim/model_check.py: mass/CG/inertia report + tilt-sweep clearance (mj_geomDistance)
-- scripts/check_model.py: ALL CHECKS PASS
-  - mass 3.527 kg (0.00% err), CG 0.89 cm, Ixx +0.1% / Iyy +8.2% / Izz -2.8%
-  - min prop clearance 2.66 cm >= 1.52 cm target; no structural interpenetration
-- scripts/render_views.py: 7 views in docs/renders/ (EGL, offwidth 1280)
-- scripts/viewer_tilt.py: interactive viewer, keys Q/A W/S E/D Z X
-- tests/test_model.py: 11 acceptance tests; full suite 23/23 green
+- control/pid.py: PID + quaternion attitude helpers (FLU nose-up-positive
+  euler convention, documented — two sign bugs lived there)
+- control/mixer.py: hover/cruise allocation, airspeed blend, roll-yaw
+  decoupling, tail-reaction feedforward, inflow-corrected throttle inversion
+- control/baseline.py: cascaded PID (pos->vel->att->rate), transition state
+  machine (TAKEOFF/HOVER/TRANSITION/CRUISE/BACK/HOVER2/LAND), tilt-leads-
+  airspeed ramp, sink guard, lift feedforward, back-transition pitch gating
+- control/trim.py: analytic trim solver 0-20 m/s + tilt-corridor map
+- eval/run_mission.py: mission runner, metrics CSV, plots, video rendering
 
-### Parameter changes
-- params.yaml: added `layout:` section (z-heights, bays, servo placement)
-- avionics_nose_x 0.40 -> 0.325 (Iyy within 10%); see D-08
+### Evidence (eval/baseline_metrics.csv)
+| case | completed | alt dev (m) | landing (m) | limit |
+|------|-----------|-------------|-------------|-------|
+| calm | yes | 2.98 | 0.24 | <3 / <1 ✓ |
+| wind 5 m/s | yes | 5.67 | 22.8 | "stable" ✓ (see issues) |
+| CG +2 cm | yes | 2.95 | 0.22 | stable ✓ |
+
+- eval/trim_table.csv: hover trim = equal split at 0.751 throttle (design
+  intent confirmed); cruise 17 m/s at pitch +1.6 deg, thr 0.88
+- eval/tilt_corridor.png: feasible corridor; known pinch at V 8-10 where
+  static trim saturates the elevator (crossed dynamically by the controller)
 
 ### Open issues
-- Iyy +8.2% vs budget: the detailed buildup is heavier in pitch than the early
-  estimate; within tolerance but worth re-measuring on the real airframe (Phase 10).
-- Renders use MUJOCO_GL=egl (WSL2); osmesa lib not installed (not needed).
+1. Landing drift in 5 m/s wind: 22.8 m (gates now use ground speed; the
+   descent itself still drifts). Candidate for the RL comparison story.
+2. Trim corridor pinch V 8-10 m/s: static infeasibility at scheduled tilt;
+   flight crosses it transiently. Report discussion item.
+3. Transition altitude margin is thin (2.98 of 3.0 m) — sensitive to gains.
 
-## Next: Phase 2 — simulation physics (motor, servo, aero, wind, sensors)
+### Phase history
+- Phase 0 (568c2bc): scaffold, WSL2 env, 23 tests
+- Phase 1 (3825adc): parametric MJCF, mass/CG/inertia/clearance checks pass
+- Phase 2 (4058153): physics (motor/servo/aero/wind/sensors), 40 tests
+
+## Next: Phase 4 — RL environment (Gymnasium), then overnight S1/S2 training
