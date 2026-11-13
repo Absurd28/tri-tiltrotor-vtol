@@ -137,7 +137,9 @@ class ResidualPolicy:
     companion computer), falling back to final/zip/latest checkpoint.
     `available` is False if nothing trained exists yet."""
 
-    SEARCH = ("s2_waypoint", "s1_hover")
+    # S1 hover is the residual that tested better than the baseline in the
+    # hover regime (tracking error -26 %, crashes 6 % -> 2 %); S2 did not
+    SEARCH = ("s1_hover", "s2_waypoint")
 
     def __init__(self, path=None):
         self.name, self._run = None, None

@@ -76,14 +76,15 @@ python eval/run_mission.py --tag wind5 --wind 5     # fails (known limitation, r
 python eval/run_mission.py --tag cg0.02 --cg-shift 0.02
 MUJOCO_GL=egl python eval/run_mission.py --tag video --video docs/videos/mission_calm.mp4
 # RL (≈5.5 h on a laptop for the full chain, see C:/Temp/chain.sh equivalent below)
-python rl/train.py --task hover    --steps 1000000 --name s1_hover    --dr
-python rl/train.py --task waypoint --steps 2500000 --name s2_waypoint --dr --init runs/s1_hover/final.zip
-python rl/train.py --task obstacle --steps 2500000 --name s5_obstacle --dr --difficulty 0.4 --init runs/s2_waypoint/final.zip
+python rl/train.py --task hover    --steps 1000000 --name s1_hover    --dr --log-std-init -2.3 --lr 1e-4
+python rl/train.py --task waypoint --steps 1000000 --name s2_waypoint --dr --log-std-init -2.3 --lr 1e-4 --init runs/s1_hover/final.zip
+python rl/train.py --task obstacle --steps 300000 --name s5_obstacle --dr --difficulty 0.4 --init runs/s2_waypoint/final.zip   # mode B (stopped: no learning)
 python rl/select_checkpoint.py --name s1_hover --task hover          # best.zip on validation seeds
 python rl/select_checkpoint.py --name s2_waypoint --task waypoint
-python rl/select_checkpoint.py --name s5_obstacle --task obstacle --difficulty 0.4
+python rl/train.py --task obstacle --mode G --steps 1000000 --name s5_obstacle_G --dr --difficulty 0.4 --log-std-init -1.0 --lr 3e-4
+python rl/select_checkpoint.py --name s5_obstacle_G --task obstacle --mode G --difficulty 0.4
 bash scripts/evaluate_all.sh                        # eval/rl_metrics.csv (50 test episodes each)
-python rl/export_onnx.py runs/s5_obstacle/best.zip  # ONNX + parity check
+python rl/export_onnx.py runs/s1_hover/best.zip     # ONNX + parity check (also s2, s5_obstacle_G)
 python hardware/power_budget.py                     # electrical budget tables
 ```
 

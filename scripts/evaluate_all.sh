@@ -1,13 +1,19 @@
 #!/bin/bash
-# Regenerate eval/rl_metrics.csv: 50 seeded episodes (seeds 10000-10049, with
-# domain randomization) per task for the baseline and the trained policy.
+# Regenerate eval/rl_metrics.csv (report §5 table): 50 TEST episodes per row,
+# seeds 10000-10049, domain randomisation on. best.zip = checkpoint chosen on
+# VALIDATION seeds 20000+ by rl/select_checkpoint.py (D-17).
 set -e
 cd "$(dirname "$0")/.."
+E="python rl/evaluate.py --dr -n 50"
 rm -f eval/rl_metrics.csv
-for spec in "hover s1_hover 0.3" "waypoint s2_waypoint 0.3" "obstacle s5_obstacle 0.4"; do
-  set -- $spec
-  python rl/evaluate.py --task $1 --baseline --dr -n 50 --difficulty $3 --label baseline
-  # best.zip = checkpoint chosen on validation seeds 20000+ (rl/select_checkpoint.py)
-  python rl/evaluate.py --task $1 --policy runs/$2/best.zip --dr -n 50 --difficulty $3 --label $2/best
-  python rl/evaluate.py --task $1 --policy runs/$2/final.zip --dr -n 50 --difficulty $3 --label $2/final
-done
+$E --task hover --baseline --label baseline
+$E --task hover --policy runs/s1_hover/best.zip --label s1_hover/best
+$E --task hover --policy runs/s1_hover/final.zip --label s1_hover/final
+$E --task waypoint --baseline --label baseline
+$E --task waypoint --policy runs/s2_waypoint/best.zip --label s2_waypoint/best
+$E --task waypoint --policy runs/s2_waypoint/final.zip --label s2_waypoint/final
+$E --task obstacle --difficulty 0.4 --mode G --baseline --label baseline_guidance
+$E --task obstacle --difficulty 0.4 --baseline --label baseline
+$E --task obstacle --difficulty 0.4 --mode G --policy runs/s5_obstacle_G/best.zip --label s5_obstacle_G/best
+$E --task obstacle --difficulty 0.4 --policy runs/s5_obstacle/best.zip --label s5_obstacle_B/best
+$E --task obstacle --difficulty 0.4 --mode G --policy runs/s5_obstacle_G/ckpt_999960_steps.zip --label s5_obstacle_G/last

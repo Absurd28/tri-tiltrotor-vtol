@@ -130,26 +130,80 @@ held-out episodes (seeds 10000+), all with domain randomisation. The last
 checkpoint is reported alongside.
 
 **Training budget actually spent:** S1 hover 1.0M steps, S2 waypoints 1.0M
-(warm-started from S1), S5 obstacles 1.5M (warm-started from S2, difficulty 0.4).
-A WSL restart killed S2 at 233k steps; it resumed from the 200k checkpoint.
+(warm-started from S1; a WSL restart killed it at 233k steps and it resumed
+from the 200k checkpoint), S5 obstacles in mode B 0.3M steps (warm-started
+from S2, stopped: no learning) and in guidance mode G 1.0M steps from scratch
+(stopped at the time cap), difficulty 0.4.
 
 Results (`eval/rl_metrics.csv`, 50 test episodes each, DR on):
 
-⟨RL_TABLE⟩
+| task | policy | success | collision | crash | mean reward | mean tracking error |
+|---|---|---|---|---|---|---|
+| hover | baseline | 88 % | 0 % | 6 % | 628 | 1.13 m |
+| hover | **S1 best** (800k) | 86 % | 0 % | **2 %** | **637** | **0.83 m** |
+| hover | S1 last (1M) | 84 % | 0 % | 4 % | 632 | 0.83 m |
+| waypoints | baseline | **24 %** | 6 % | 68 % | 150 | 6.72 m |
+| waypoints | S2 best (400k) | 14 % | 4 % | 66 % | 218 | 6.88 m |
+| waypoints | S2 last (1M) | 22 % | 2 % | 66 % | 215 | 6.73 m |
+| obstacles | baseline (mode B, zero residual) | **10 %** | **52 %** | 38 % | −12.5 | 25.3 m |
+| obstacles | baseline (mode G, zero offset) | 6 % | 50 % | 44 % | −16.4 | 25.7 m |
+| obstacles | S5 mode B best (100k) | 4 % | 68 % | 28 % | −12.3 | 26.6 m |
+| obstacles | S5 mode G best (600k) | 4 % | 70 % | 26 % | −13.5 | 27.0 m |
+| obstacles | S5 mode G last (1M) | 8 % | 52 % | 38 % | +10.2 | 25.3 m |
 
-Against the pre-registered thresholds, verbatim: **S1 ≥ 95 % success —
-⟨S1_VERDICT⟩. S5 ≥ 85 % success and ≤ 10 % collisions — ⟨S5_VERDICT⟩.**
+("crash" = attitude > 70°, out of bounds or non-finite state without a
+collision; "collision" includes ground contact.)
 
-⟨RL_DISCUSSION⟩
+Against the pre-registered thresholds, verbatim: **S1 ≥ 95 % success — NOT
+MET (86 %; the baseline itself scores 88 % under the same randomisation).
+S5 ≥ 85 % success and ≤ 10 % collisions — NOT MET (best 8 % / 52 %; baseline
+10 % / 52 %).** The thresholds were not changed.
+
+**What the RL did achieve.** In hover, the residual policy reduced mean
+tracking error by 26 % (1.13 → 0.83 m) and crashes from 6 % to 2 % at the same
+energy use; the success difference (86 vs 88 %, n = 50) is within sampling
+noise (±5 % standard error). This is the policy used by the ground station's
+precision approach (§6), where landings end 0.04–0.24 m from the pad.
+
+**Why the other stages failed — diagnosis, not excuses.**
+1. *Budget.* Each stage got ≈ 1M steps (one night on a laptop, a WSL restart
+   cost ~1 h). Comparable published tilt-rotor/obstacle results use
+   10–100M steps.
+2. *Waypoint task design.* Three waypoints up to 17 m apart inside 30 s at the
+   4 m/s hover speed limit is time-limited: most "failures" are timeouts or
+   long-distance flights that end in departures (68 % crash for the
+   baseline). The policy learned to raise the shaped reward (+45 %) without
+   raising completion — reward and success criterion disagree.
+3. *Obstacle avoidance in actuator space.* With mode B the residual has to
+   overpower the baseline's position loop every step to steer around an
+   obstacle; no learning in 300k steps (D-21). The guidance mode G started
+   learning (rollout reward −55 → ≈ 0) but 1M steps were not enough to beat
+   the baseline on held-out seeds, and selecting on only 20 validation
+   episodes picked a lucky checkpoint (30 % validation → 4 % test).
+4. *Shared root cause with the baseline's wind failure:* many crashes in all
+   tasks are departures from sideways/tail-first flight under DR wind — the
+   weak hover yaw authority (§4) limits both the baseline and anything built
+   on it.
+
+**Next steps (in order of expected value):** weathervane yaw mode in the
+baseline (§4), then retrain; obstacle policy in mode G with a curriculum
+(difficulty 0.1 → 0.6) and ≥ 10M steps; 100+ validation episodes for
+selection; waypoint task with a time budget proportional to the distance.
+
+**[VIDEOS: docs/videos/rl_hover_s1.mp4 (S1 policy, test seed 10000);
+docs/videos/baseline_obstacle.mp4 vs docs/videos/rl_obstacle_G_seed10001.mp4 —
+the same obstacle field (seed 10001): the baseline collides, the S5-G policy
+reaches the goal. One illustrative episode only; the table above is the result
+(S5-G does not beat the baseline on average).]**
 
 Scope cuts applied per the pre-agreed order (brief §5.6): RL transition
 replaced by the scripted baseline transition; full S6 randomization reduced
 to light per-episode DR (mass ±15 %, kT ±10 %, lag ±30 %, aero ±20 %, wind
 ≤ 3 m/s); SITL skipped; 50 test episodes instead of 100.
 
-ONNX export (`rl/export_onnx.py`): policies run in onnxruntime with max
-deviation from the PyTorch policy of 8.9e-8 (limit 1e-5) — the format the
-companion computer would run.
+ONNX export (`rl/export_onnx.py`): the selected S1, S2 and S5-G policies run
+in onnxruntime with max deviation from the PyTorch policy of 1.8e-7 (limit
+1e-5) — the format the companion computer would run (`runs/*/best.onnx`).
 
 ## 6. Ground station: manual practice and autonomous delivery
 
@@ -213,7 +267,10 @@ forward lidar + camera (a 360° lidar would bust the mass budget by 40 %).
 
 ## 8. Limitations and future work
 
-- RL: ⟨RL_LIMITATION⟩
+- RL: thresholds not met (S1 86 % vs ≥ 95 %; S5 8 % / 52 % vs ≥ 85 % / ≤ 10 %).
+  RL helps hover tracking (−26 % error) but not waypoint or obstacle
+  completion within ≈ 1M steps per stage; see §5 for the diagnosis and the
+  ordered next steps.
 - **Wind:** the full baseline mission completes up to 3 m/s steady wind
   (12 m landing drift) and fails at 4–5 m/s (hover yaw saturation against the
   weathervane moment, §4). Needs a weathervane yaw mode + into-wind
