@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VTOL Ground Station</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">▲</span> VTOL Ground Station <small>tilt-tri-rotor · MuJoCo</small></div>
+  <div class="pills">
+    <span id="p-arm" class="pill off">DISARMED</span>
+    <span id="p-mode" class="pill">MANUAL</span>
+    <span id="p-phase" class="pill dim">—</span>
+    <span id="p-rl" class="pill dim">RL off</span>
+    <span id="p-batt" class="pill dim">— V</span>
+    <span id="p-link" class="pill bad">offline</span>
+  </div>
+</header>
+
+<main class="grid">
+  <section class="stage">
+    <img id="video" alt="simulation view">
+    <canvas id="hud"></canvas>
+    <div id="toast" class="toast"></div>
+    <div class="cam-switch">
+      <button data-cam="chase" class="on">Chase</button>
+      <button data-cam="nose">Nose cam</button>
+      <button data-cam="orbit">Orbit</button>
+      <button data-cam="top">Top</button>
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="card">
+      <div class="card-h">Map <small>click to set destination · E/N metres from home</small></div>
+      <canvas id="map"></canvas>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Auto delivery</div>
+      <div class="row">
+        <label>East x <input id="dx" type="number" value="400" step="10"></label>
+        <label>North y <input id="dy" type="number" value="150" step="10"></label>
+        <button id="btn-start" class="primary">Start delivery</button>
+      </div>
+      <div class="presets">
+        <button data-p="40,-30">Short hop (multicopter)</button>
+        <button data-p="400,150">400 m (VTOL wing)</button>
+        <button data-p="-300,-450">Long leg</button>
+      </div>
+      <ol id="phases" class="phases"></ol>
+      <p class="note">Takes off, transitions to wing-borne cruise (≥300 m), back-transitions, makes an
+        RL-assisted precision approach, lands, releases the payload and flies home. Shorter hops are
+        flown as a multicopter.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-h">Telemetry</div>
+      <div class="tele" id="tele"></div>
+    </div>
+  </aside>
+</main>
+
+<section class="tx">
+  <div class="stick-wrap">
+    <div class="stick" id="stick-l"><div class="knob"></div><span class="lbl t">THR</span><span class="lbl r">YAW</span></div>
+  </div>
+
+  <div class="switches">
+    <div class="sw-grid">
+      <div class="sw"><span>SA · ARM</span><button id="sw-arm" class="toggle">DISARMED</button></div>
+      <div class="sw"><span>SB · FLIGHT MODE</span>
+        <div class="seg" id="sw-mode"><button data-v="MANUAL" class="on">MANUAL</button><button data-v="AUTO">AUTO</button></div></div>
+      <div class="sw"><span>SC · MANUAL MODE</span>
+        <div class="seg" id="sw-man"><button data-v="POSITION" class="on">POSITION</button><button data-v="ANGLE">ANGLE</button></div></div>
+      <div class="sw"><span>SD · VTOL</span>
+        <div class="seg" id="sw-vtol"><button data-v="MC" class="on">HOVER</button><button data-v="FW">WING</button></div></div>
+      <div class="sw"><span>SE · RL ASSIST</span>
+        <div class="seg" id="sw-rl"><button data-v="1" class="on">ON</button><button data-v="0">OFF</button></div></div>
+      <div class="sw"><span>PAYLOAD</span><button id="btn-drop">DROP</button></div>
+    </div>
+    <div class="sw-row">
+      <label>Wind <select id="wind"><option value="0">calm</option><option value="2">2 m/s</option><option value="4">4 m/s</option></select></label>
+      <button id="btn-reset">RESET SIM</button>
+      <button id="btn-pause">PAUSE</button>
+      <details class="gp">
+        <summary>Gamepad / RC transmitter <span id="gp-status">none</span></summary>
+        <div class="gp-body">
+          <p>Plug in your transmitter (EdgeTX/OpenTX/ELRS radios in USB-joystick mode) or a gamepad and move a stick.
+            Assign each channel to an axis; tick <em>inv</em> if it moves the wrong way.</p>
+          <div id="gp-map"></div>
+          <div id="gp-axes" class="axes"></div>
+          <label><input type="checkbox" id="gp-use" checked> Use gamepad when connected</label>
+        </div>
+      </details>
+    </div>
+    <p class="keys">Keyboard: <b>W/S</b> throttle · <b>A/D</b> yaw · <b>↑↓←→</b> pitch/roll · <b>T</b> arm ·
+      <b>M</b> manual/auto · <b>V</b> hover/wing · <b>P</b> drop payload</p>
+  </div>
+
+  <div class="stick-wrap">
+    <div class="stick" id="stick-r"><div class="knob"></div><span class="lbl t">PITCH</span><span class="lbl r">ROLL</span></div>
+  </div>
+</section>
+
+<script src="app.js"></script>
+</body>
+</html>

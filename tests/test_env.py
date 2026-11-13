@@ -72,6 +72,36 @@ def test_determinism():
     assert np.allclose(o1, o2) and r1 == r2
 
 
+def test_parked_motors_off_is_finite():
+    """Motors stopped at zero airspeed: the slipstream model must not divide
+    0/0 (it used to NaN and make MuJoCo reset the vehicle)."""
+    from sim.vehicle import Vehicle
+    veh = Vehicle()
+    s = veh.reset(seed=0, pos=(3.0, 4.0, 0.147))
+    for _ in range(50):
+        s = veh.step(np.zeros(9))
+    assert np.all(np.isfinite(s["pos"]))
+    assert np.allclose(s["pos"][:2], [3.0, 4.0], atol=0.05)
+
+
+def test_untrained_residual_policy_is_baseline():
+    """D-16: a fresh mode-B policy must output exactly zero residual, so the
+    untrained agent flies the baseline controller."""
+    from stable_baselines3 import PPO
+    from rl.train import zero_residual_head
+    env = VTOLEnv(task="hover", action_mode="B", seed=4)
+    model = PPO("MlpPolicy", env, device="cpu", seed=0,
+                policy_kwargs=dict(net_arch=[128, 128], log_std_init=-2.3))
+    zero_residual_head(model)
+    obs, _ = env.reset(seed=4)
+    for _ in range(5):
+        a, _ = model.predict(obs, deterministic=True)
+        assert np.allclose(a, 0.0)
+        obs, *_ = env.step(a)
+    std = model.policy.log_std.exp().detach().numpy()
+    assert np.allclose(std, np.exp(-2.3), rtol=1e-3)
+
+
 def test_env_speed_and_memory(capsys):
     import resource
     env = VTOLEnv(task="hover", action_mode="B", seed=1)

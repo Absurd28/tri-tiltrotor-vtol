@@ -62,7 +62,10 @@ class Motor:
         Without this the slipstream wash over the wing is several times too
         strong in transition, which killed the roll authority."""
         vi_h2 = max(thrust, 0.0) / (2 * rho * disk_area)
-        return float(vi_h2 / np.sqrt(airspeed**2 + vi_h2))
+        den = np.sqrt(airspeed**2 + vi_h2)
+        # motors stopped at rest: 0/0 -> no slipstream (a NaN here made
+        # MuJoCo reset the state of a parked vehicle)
+        return float(vi_h2 / den) if den > 1e-9 else 0.0
 
 
 class Battery:

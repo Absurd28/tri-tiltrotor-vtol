@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 860" font-family="Segoe UI, Arial, sans-serif" font-size="13">
+  <title>Tilt-tri-rotor VTOL electrical block diagram</title>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker>
+    <style>
+      .box{fill:#fff;stroke:#33414e;stroke-width:1.4;rx:8}
+      .grp{fill:#f4f7fa;stroke:#c5d0da;stroke-dasharray:5 4;rx:12}
+      .h{font-weight:700;font-size:14px;fill:#1b2733}
+      .s{font-size:11.5px;fill:#55636f}
+      .g{font-size:12px;font-weight:700;fill:#7a8794;letter-spacing:.5px}
+      .pw{stroke:#d63b2f;stroke-width:3;fill:none}
+      .pw5{stroke:#e88a2b;stroke-width:2;fill:none}
+      .pwm{stroke:#e0a100;stroke-width:1.8;fill:none;marker-end:url(#a)}
+      .ser{stroke:#2f7fd6;stroke-width:1.8;fill:none;marker-end:url(#a);marker-start:url(#a)}
+      .i2c{stroke:#2e9e57;stroke-width:1.8;fill:none;marker-end:url(#a);marker-start:url(#a)}
+      .vid{stroke:#8a4fd6;stroke-width:1.8;fill:none;marker-end:url(#a)}
+      .rf{stroke:#555;stroke-width:1.4;stroke-dasharray:4 4;fill:none;marker-end:url(#a);marker-start:url(#a)}
+      .lbl{font-size:10.5px;fill:#33414e}
+    </style>
+  </defs>
+  <rect width="1280" height="860" fill="#ffffff"/>
+  <text x="24" y="34" font-size="20" font-weight="700" fill="#1b2733">Tilt-tri-rotor VTOL — electrical block diagram</text>
+  <text x="24" y="54" class="s">Pixhawk 6C Mini (PX4 VTOL tiltrotor) · 6S 5000 mAh · 3 motors · 10 servos · companion computer runs the ONNX RL policy</text>
+
+  <!-- groups -->
+  <rect class="grp" x="16" y="80" width="300" height="560"/><text x="30" y="102" class="g">POWER</text>
+  <rect class="grp" x="340" y="80" width="560" height="200"/><text x="354" y="102" class="g">SENSORS</text>
+  <rect class="grp" x="924" y="80" width="340" height="560"/><text x="938" y="102" class="g">ACTUATORS</text>
+  <rect class="grp" x="340" y="470" width="560" height="170"/><text x="354" y="492" class="g">COMPANION · CAMERA · LINKS</text>
+
+  <!-- power -->
+  <rect class="box" x="36" y="116" width="260" height="56"/><text x="50" y="140" class="h">Battery 6S 5000 mAh LiPo</text><text x="50" y="158" class="s">22.2 V nom · 25.2 V full · 111 Wh · XT90</text>
+  <rect class="box" x="36" y="206" width="260" height="56"/><text x="50" y="230" class="h">Power module PM02 V3</text><text x="50" y="248" class="s">V/I sense → FC · 5.3 V FC supply</text>
+  <rect class="box" x="36" y="296" width="260" height="56"/><text x="50" y="320" class="h">Power distribution board</text><text x="50" y="338" class="s">10 AWG in · 3× XT60 out (14 AWG)</text>
+  <rect class="box" x="36" y="386" width="260" height="70"/><text x="50" y="410" class="h">3× ESC 40 A 6S (DShot600)</text><text x="50" y="428" class="s">Left · Right · Tail — no BEC</text><text x="50" y="444" class="s">max motor draw 23 A → 1.7× margin</text>
+  <rect class="box" x="36" y="490" width="260" height="56"/><text x="50" y="514" class="h">Servo UBEC 7.4 V 10 A</text><text x="50" y="532" class="s">feeds FC servo rail (10 servos)</text>
+  <rect class="box" x="36" y="568" width="260" height="56"/><text x="50" y="592" class="h">UBEC 5.1 V 3 A</text><text x="50" y="610" class="s">companion computer · FPV cam/VTX</text>
+  <path class="pw" d="M166 172V206"/><path class="pw" d="M166 262V296"/><path class="pw" d="M166 352V386"/>
+  <path class="pw" d="M300 324H318V518H296"/><path class="pw" d="M318 518V596H296"/>
+
+  <!-- FC -->
+  <rect x="430" y="300" width="380" height="150" rx="12" fill="#e9f2fc" stroke="#2f7fd6" stroke-width="2"/>
+  <text x="446" y="326" class="h" font-size="16">Flight controller · Pixhawk 6C Mini</text>
+  <text x="446" y="346" class="s">STM32H743 · PX4 VTOL tiltrotor (cascaded PID, mixers, transition)</text>
+  <text x="446" y="368" class="lbl">• Gyro + accelerometer: ICM-42688-P (primary) + BMI055 (redundant)</text>
+  <text x="446" y="386" class="lbl">• Barometer MS5611 · mounted at CG on dampers</text>
+  <text x="446" y="404" class="lbl">• FMU AUX1-3: DShot motors · AUX4-5: rudder R, payload</text>
+  <text x="446" y="422" class="lbl">• IO MAIN1-8: tilt L/R/T, aileron L/R, elevator L/R, rudder L</text>
+  <text x="446" y="440" class="lbl">• TELEM1 SiK · TELEM2 companion · TELEM3 RC (CRSF) · GPS1 · UART4 · I2C</text>
+  <path class="pw5" d="M296 248H330V318H430"/><text x="336" y="296" class="lbl">POWER1</text><text x="336" y="309" class="lbl">5.3 V + V/I</text>
+
+  <!-- sensors -->
+  <rect class="box" x="356" y="116" width="170" height="70"/><text x="368" y="140" class="h">GNSS + compass</text><text x="368" y="158" class="s">u-blox M10 · IST8310</text><text x="368" y="174" class="s">safety switch · LED</text>
+  <rect class="box" x="540" y="116" width="170" height="70"/><text x="552" y="140" class="h">Airspeed sensor</text><text x="552" y="158" class="s">MS4525DO + pitot</text><text x="552" y="174" class="s">nose, x = 0.45 m</text>
+  <rect class="box" x="724" y="116" width="164" height="70"/><text x="736" y="140" class="h">Down lidar</text><text x="736" y="158" class="s">TF-Luna 0.2–8 m</text><text x="736" y="174" class="s">landing height</text>
+  <rect class="box" x="356" y="200" width="170" height="64"/><text x="368" y="224" class="h">Buzzer</text><text x="368" y="242" class="s">arming / failsafe tones</text>
+  <path class="ser" d="M440 186V300"/><text x="446" y="276" class="lbl">GPS1 UART+I2C</text>
+  <path class="i2c" d="M625 186V300"/><text x="631" y="276" class="lbl">I2C</text>
+  <path class="ser" d="M806 186V300"/><text x="812" y="276" class="lbl">UART4</text>
+
+  <!-- actuators -->
+  <rect class="box" x="940" y="116" width="310" height="96"/><text x="954" y="140" class="h">3× Brushless motor ~460 KV</text><text x="954" y="158" class="s">12×6.5 props · 1.18 kgf hover / 2.1 kgf max each</text><text x="954" y="176" class="s">Left CCW · Right CW (torques cancel) · Tail</text><text x="954" y="194" class="s">3-phase from ESCs</text>
+  <rect class="box" x="940" y="232" width="310" height="70"/><text x="954" y="256" class="h">3× Tilt servo (45 g, HV)</text><text x="954" y="274" class="s">nacelles 0–90° · tail pod 0–30°</text><text x="954" y="290" class="s">≈120 °/s</text>
+  <rect class="box" x="940" y="322" width="310" height="70"/><text x="954" y="346" class="h">6× Surface servo (12 g)</text><text x="954" y="364" class="s">aileron L/R · elevator L/R · rudder L/R</text><text x="954" y="380" class="s">tail servos in fuselage, pushrods (D-07)</text>
+  <rect class="box" x="940" y="412" width="310" height="56"/><text x="954" y="436" class="h">Payload release servo</text><text x="954" y="454" class="s">MG90S latch · MAV_CMD_DO_GRIPPER</text>
+  <path class="pw" d="M296 412H330V655H920V164H940"/><text x="540" y="672" class="lbl">ESC → motor 3-phase (14 AWG)</text>
+  <path class="pwm" d="M810 340H900V264H940"/><path class="pwm" d="M810 360H910V356H940"/><path class="pwm" d="M810 380H920V440H940"/>
+  <text x="818" y="334" class="lbl">PWM 50–333 Hz</text>
+  <path class="pwm" d="M430 414H340V430H296"/><text x="334" y="452" class="lbl">DShot600</text>
+  <path class="pw5" d="M296 518H330V470"/>
+
+  <!-- companion and links -->
+  <rect class="box" x="356" y="506" width="250" height="118"/><text x="370" y="530" class="h">Companion: Raspberry Pi Zero 2 W</text><text x="370" y="548" class="s">onnxruntime RL residual policy @ 50 Hz</text><text x="370" y="564" class="s">MAVLink offboard setpoints · pad detection</text><text x="370" y="580" class="s">forward lidar TF-Luna (I2C)</text><text x="370" y="596" class="s">video H.264 → Wi-Fi to ground station</text>
+  <rect class="box" x="622" y="506" width="130" height="56"/><text x="634" y="530" class="h">Camera Module 3</text><text x="634" y="548" class="s">IMX708 · CSI-2</text>
+  <rect class="box" x="622" y="572" width="130" height="56"/><text x="634" y="596" class="h">FPV cam + VTX</text><text x="634" y="614" class="s">5.8 GHz · OSD</text>
+  <rect class="box" x="766" y="506" width="122" height="56"/><text x="778" y="530" class="h">ELRS receiver</text><text x="778" y="548" class="s">2.4 GHz · CRSF</text>
+  <rect class="box" x="766" y="572" width="122" height="56"/><text x="778" y="596" class="h">SiK telemetry</text><text x="778" y="614" class="s">MAVLink 57600</text>
+  <path class="ser" d="M520 450V506"/><text x="526" y="482" class="lbl">TELEM2 921600</text>
+  <path class="vid" d="M622 534H606"/>
+  <path class="ser" d="M827 450V506"/><text x="760" y="482" class="lbl">TELEM3 CRSF</text>
+  <path class="ser" d="M870 450V486H896V600H888"/><text x="842" y="470" class="lbl">TELEM1</text>
+  <path class="pw5" d="M296 596H356"/>
+
+  <!-- ground -->
+  <rect x="340" y="700" width="924" height="140" rx="12" fill="#fbf7ef" stroke="#e0c890"/>
+  <text x="354" y="722" class="g">GROUND</text>
+  <rect class="box" x="360" y="736" width="250" height="88"/><text x="374" y="760" class="h">RC transmitter (EdgeTX)</text><text x="374" y="778" class="s">Mode 2 sticks · SA arm · SB mode</text><text x="374" y="794" class="s">SC/SD/SE switches as in the simulator</text><text x="374" y="810" class="s">same radio = USB joystick for sim practice</text>
+  <rect class="box" x="630" y="736" width="290" height="88"/><text x="644" y="760" class="h">Ground station laptop</text><text x="644" y="778" class="s">QGroundControl (SiK USB radio)</text><text x="644" y="794" class="s">gcs/ web cockpit: practice + mission planning</text><text x="644" y="810" class="s">video from companion (Wi-Fi)</text>
+  <rect class="box" x="940" y="736" width="300" height="88"/><text x="954" y="760" class="h">FPV goggles / monitor</text><text x="954" y="778" class="s">5.8 GHz analog receiver</text><text x="954" y="794" class="s">manual line-of-sight backup view</text>
+  <path class="rf" d="M485 736V700H827V628"/><text x="560" y="694" class="lbl">2.4 GHz ELRS control link</text>
+  <path class="rf" d="M775 736V686H860V628"/>
+  <path class="rf" d="M1090 736V700H700V628"/>
+
+  <!-- legend -->
+  <g transform="translate(24,676)">
+    <text class="g" y="0">LEGEND</text>
+    <path class="pw" d="M0 18H34"/><text x="42" y="22" class="lbl">battery power</text>
+    <path class="pw5" d="M0 38H34"/><text x="42" y="42" class="lbl">regulated 5–7.4 V</text>
+    <path class="pwm" d="M0 58H34"/><text x="42" y="62" class="lbl">PWM / DShot</text>
+    <path class="ser" d="M0 78H34"/><text x="42" y="82" class="lbl">UART / MAVLink</text>
+    <path class="i2c" d="M0 98H34"/><text x="42" y="102" class="lbl">I2C</text>
+    <path class="vid" d="M0 118H34"/><text x="42" y="122" class="lbl">video (CSI)</text>
+    <path class="rf" d="M0 138H34"/><text x="42" y="142" class="lbl">radio link</text>
+  </g>
+</svg>

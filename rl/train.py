@@ -28,6 +28,14 @@ def make_env_fn(task, mode, dr, difficulty, seed, rank):
     return _f
 
 
+def zero_residual_head(model):
+    """Residual starts at exactly zero = the baseline controller (D-16)."""
+    import torch
+    with torch.no_grad():
+        model.policy.action_net.weight.zero_()
+        model.policy.action_net.bias.zero_()
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", default="hover",
@@ -62,7 +70,8 @@ def main():
     env = VecMonitor(env, filename=str(run_dir / "monitor"))
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    ckpt_files = sorted(run_dir.glob("ckpt_*_steps.zip"))
+    ckpt_files = sorted(run_dir.glob("ckpt_*_steps.zip"),     # numeric, not
+                        key=lambda p: int(p.stem.split("_")[1]))  # string order
     if args.resume and ckpt_files:
         model = PPO.load(ckpt_files[-1], env=env, device=device)
         print(f"resumed from {ckpt_files[-1].name} "
@@ -82,10 +91,7 @@ def main():
             verbose=1,
         )
         if args.mode == "B":
-            # residual starts at exactly zero = the baseline controller (D-16)
-            with torch.no_grad():
-                model.policy.action_net.weight.zero_()
-                model.policy.action_net.bias.zero_()
+            zero_residual_head(model)
 
     ckpt = CheckpointCallback(save_freq=max(100_000 // args.n_envs, 1),
                               save_path=str(run_dir), name_prefix="ckpt")
