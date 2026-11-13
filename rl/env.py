@@ -63,7 +63,10 @@ class VTOLEnv(gym.Env):
         self.max_steps = int(ep / self.rl_dt)
 
         self.observation_space = spaces.Box(-np.inf, np.inf, (35,), np.float32)
-        self.action_space = spaces.Box(-1.0, 1.0, (9,), np.float32)
+        # mode G (guidance residual, D-21): [lateral, vertical] offset of the
+        # baseline's position setpoint; modes A/B act on the 9 actuators
+        n_act = 2 if action_mode == "G" else 9
+        self.action_space = spaces.Box(-1.0, 1.0, (n_act,), np.float32)
         self.residual_scale = np.array([0.25] * 3 + [0.25] * 3 + [0.5] * 3)
 
         self._ray_group = np.zeros(6, dtype=np.uint8)
@@ -132,6 +135,23 @@ class VTOLEnv(gym.Env):
         return self.ctrl_base._hover_update(s, self.goal, np.zeros(3),
                                             0.0, self.veh.dt_ctrl, 0.0)
 
+    G_LAT, G_VERT, G_CARROT = 5.0, 3.0, 6.0
+
+    def _guidance_u(self, s, a):
+        """Mode G: the baseline tracks a carrot 6 m toward the goal, shifted
+        sideways/up by the policy. a = 0 reproduces baseline goal-seeking."""
+        pos = s["pos"]
+        to = self.goal - pos
+        d = np.linalg.norm(to[:2])
+        fwd = to[:2] / max(d, 1e-6)
+        perp = np.array([-fwd[1], fwd[0]])              # left of the goal line
+        p = pos.copy()
+        p[:2] += fwd * min(d, self.G_CARROT) + perp * self.G_LAT * a[0]
+        p[2] = self.goal[2] + self.G_VERT * a[1]
+        p[2] = max(p[2], 2.0)
+        return self.ctrl_base._hover_update(s, p, np.zeros(3), 0.0,
+                                            self.veh.dt_ctrl, 0.0)
+
     def _rays(self, s):
         out = np.full(N_RAYS, 1.0)
         if not self._obs_geoms:
@@ -181,10 +201,15 @@ class VTOLEnv(gym.Env):
     # ------------------------------------------------------------- #
     def step(self, action):
         action = np.clip(np.asarray(action, dtype=np.float64), -1, 1)
+        # observation/penalty bookkeeping is 9-dim in every mode
+        a9 = np.zeros(9)
+        a9[:len(action)] = action
         s = self.veh.state()
         for _ in range(2):                               # 50 Hz -> 100 Hz
             if self.action_mode == "A":
                 u = np.concatenate([(action[0:6] + 1) / 2, action[6:9]])
+            elif self.action_mode == "G":
+                u = self._guidance_u(s, action)
             else:
                 u = self._baseline_u(s)
                 u = u + self.residual_scale * action
@@ -198,17 +223,17 @@ class VTOLEnv(gym.Env):
         roll, pitch, _ = quat_to_euler(s["quat"])
 
         # ---------- reward ----------
-        da = action - self.last_action
+        da = a9 - self.last_action
         r = 1.0
         r -= 0.15 * min(dist, 6.0)
         r -= 0.03 * np.linalg.norm(vel)
         r -= 0.05 * np.linalg.norm(omega)
         r -= 0.10 * np.linalg.norm(da)
-        r -= 0.01 * np.linalg.norm(action)
+        r -= 0.01 * np.linalg.norm(a9)
         if self.task == "obstacle":
             r += 2.0 * (self.prev_dist - dist)           # progress shaping
         self.prev_dist = dist
-        self.last_action = action.copy()
+        self.last_action = a9
 
         terminated = False
         info = {}

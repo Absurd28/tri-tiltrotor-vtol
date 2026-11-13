@@ -323,6 +323,27 @@ altitude requirement (4.28 m > 3 m) and the CG-shift mission. The correct fix
 
 ---
 
+## D-21: Obstacle avoidance as a guidance residual (mode G)
+
+**Decision:** for S5 the policy outputs 2 numbers — a lateral (±5 m) and vertical
+(±3 m) offset of the baseline's position setpoint (a carrot 6 m toward the goal) —
+instead of residuals on the 9 actuators. Output layer zero-initialised (zero
+action = baseline goal-seeking), exploration std 0.37, trained from scratch.
+
+**Evidence:** mode-B S5 (actuator residual, warm-started from S2) showed no
+learning in 280k steps: rollout reward flat at ≈ −55, success 0–3 %. To dodge,
+an actuator residual must out-fight the baseline position loop at every step,
+because that loop keeps steering straight at the goal; the useful decision ("go
+left of that pillar") lives at the guidance level. Mode-G zero-action baseline is
+equivalent to mode B's (20 % success, 50–60 % collisions on validation seeds).
+
+**Trade-off:** mode G cannot fix attitude-level errors — it relies entirely on the
+baseline's inner loops, which is also the safer deployment (D-19): the companion
+computer would send position-setpoint offsets over MAVLink, a standard
+offboard interface.
+
+---
+
 ## D-19: Electronics — Pixhawk 6C Mini + Pi Zero 2 W companion, separate BECs
 
 **Decision:** PX4 flight controller holds all inner loops and the transition; the RL

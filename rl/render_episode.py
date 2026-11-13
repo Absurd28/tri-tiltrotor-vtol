@@ -32,6 +32,7 @@ def main():
     ap.add_argument("--seed", type=int, default=10_000)
     ap.add_argument("--difficulty", type=float, default=0.4)
     ap.add_argument("--dr", action="store_true")
+    ap.add_argument("--mode", default="B")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -43,14 +44,14 @@ def main():
         from stable_baselines3 import PPO
         policy = PPO.load(args.policy, device="cpu")
 
-    env = VTOLEnv(task=args.task, action_mode="B", dr=args.dr,
+    env = VTOLEnv(task=args.task, action_mode=args.mode, dr=args.dr,
                   difficulty=args.difficulty, seed=99)
     obs, _ = env.reset(seed=args.seed)
     renderer = mujoco.Renderer(env.veh.model, height=480, width=640)
     cam = mujoco.MjvCamera()
     frames, done, trunc, info = [], False, False, {}
     while not (done or trunc):
-        a = (np.zeros(9, np.float32) if policy is None
+        a = (np.zeros(env.action_space.shape, np.float32) if policy is None
              else policy.predict(obs, deterministic=True)[0])
         obs, _, done, trunc, info = env.step(a)
         if env.steps % 2 == 0:                       # 25 fps

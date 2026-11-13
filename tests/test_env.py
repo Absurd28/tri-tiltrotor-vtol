@@ -72,6 +72,21 @@ def test_determinism():
     assert np.allclose(o1, o2) and r1 == r2
 
 
+def test_guidance_mode_shapes_and_zero_action():
+    """D-21: mode G acts on 2 setpoint offsets; observations stay 35-dim and
+    the bookkeeping last_action stays 9-dim."""
+    env = VTOLEnv(task="obstacle", action_mode="G", seed=3, difficulty=0.2)
+    assert env.action_space.shape == (2,)
+    obs, _ = env.reset(seed=3)
+    x0 = env.veh.state()["pos"][0]
+    for _ in range(100):
+        obs, r, term, trunc, _ = env.step(np.zeros(2))
+        assert obs.shape == (35,) and np.isfinite(r)
+        if term or trunc:
+            break
+    assert env.veh.state()["pos"][0] > x0 + 2.0      # zero action seeks the goal
+
+
 def test_parked_motors_off_is_finite():
     """Motors stopped at zero airspeed: the slipstream model must not divide
     0/0 (it used to NaN and make MuJoCo reset the vehicle)."""

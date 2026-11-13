@@ -40,7 +40,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--task", default="hover",
                     choices=["hover", "waypoint", "obstacle"])
-    ap.add_argument("--mode", default="B", choices=["A", "B"])
+    ap.add_argument("--mode", default="B", choices=["A", "B", "G"])
     ap.add_argument("--steps", type=int, default=4_000_000)
     ap.add_argument("--name", default=None)
     ap.add_argument("--seed", type=int, default=0)
@@ -90,7 +90,7 @@ def main():
             tensorboard_log=str(ROOT / "runs" / "tb"),
             verbose=1,
         )
-        if args.mode == "B":
+        if args.mode in ("B", "G"):
             zero_residual_head(model)
 
     ckpt = CheckpointCallback(save_freq=max(100_000 // args.n_envs, 1),

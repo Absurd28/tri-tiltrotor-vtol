@@ -28,11 +28,11 @@ def run_episodes(env, policy, n, base_seed=10_000):
         obs, _ = env.reset(seed=base_seed + ep)
         done = trunc = False
         ep_r, errs, das = 0.0, [], []
-        prev_a = np.zeros(9)
+        prev_a = np.zeros(env.action_space.shape)
         info = {}
         while not (done or trunc):
             if policy is None:
-                a = np.zeros(9, dtype=np.float32)
+                a = np.zeros(env.action_space.shape, dtype=np.float32)
             else:
                 a, _ = policy.predict(obs, deterministic=True)
             obs, r, done, trunc, info = env.step(a)

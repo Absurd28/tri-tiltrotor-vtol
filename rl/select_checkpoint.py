@@ -31,6 +31,9 @@ def main():
     ap.add_argument("--task", required=True)
     ap.add_argument("-n", type=int, default=20)
     ap.add_argument("--difficulty", type=float, default=0.3)
+    ap.add_argument("--mode", default="B")
+    ap.add_argument("--stride", type=int, default=1,
+                    help="evaluate every k-th checkpoint (long episodes)")
     args = ap.parse_args()
     import torch
     torch.set_num_threads(1)
@@ -38,9 +41,10 @@ def main():
 
     d = ROOT / "runs" / args.name
     cands = sorted(d.glob("ckpt_*_steps.zip"), key=lambda p: int(p.stem.split("_")[1]))
+    cands = cands[args.stride - 1::args.stride]
     if (d / "final.zip").exists():
         cands.append(d / "final.zip")
-    env = VTOLEnv(task=args.task, action_mode="B", dr=True,
+    env = VTOLEnv(task=args.task, action_mode=args.mode, dr=True,
                   difficulty=args.difficulty, seed=99)
     rows = []
     base = run_episodes(env, None, args.n, base_seed=VAL_SEED)
