@@ -38,3 +38,22 @@
 - Phase 2 (4058153): physics (motor/servo/aero/wind/sensors), 40 tests
 
 ## Next: Phase 4 — RL environment (Gymnasium), then overnight S1/S2 training
+
+---
+
+## Overnight status (2026-11-13 evening)
+
+- Mode A/B probe done: Mode B (residual) selected - D-15.
+- Overnight chain RUNNING in a detached wsl.exe process (survives this
+  session; checkpoints every 100k steps in runs/<name>/):
+    S1 hover 3M steps -> S2 waypoint 2.5M (warm) -> S5 obstacle 2.5M (warm)
+  ~320 steps/s measured, ETA ~7 h. Log: runs/overnight.log.
+- If interrupted (sleep/reboot): WSL resumes on wake; otherwise restart a
+  stage with:  python rl/train.py --task <t> --mode B --name <name> --resume
+- Tomorrow: evaluate (rl/evaluate.py, 50 episodes vs baseline), export ONNX,
+  demo videos, finish docs/report.md numbers, final commit + tag.
+
+### IMPORTANT: launching long WSL jobs
+`wsl -- bash -c "nohup ... &"` DIES when wsl.exe exits (distro shuts down).
+Use a detached process instead:
+  Start-Process wsl.exe -ArgumentList "-d","Ubuntu-26.04","--","bash","script.sh" -WindowStyle Hidden

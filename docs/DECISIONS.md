@@ -210,3 +210,25 @@ the cruise gate. (b) The hover induced-velocity formula overstated the wash at s
 and the aircraft rolled over at 33-48 deg tilt (see eval/debug_roll decomposition).
 
 ---
+
+## D-15: RL action space = Mode B (residual on the baseline controller)
+
+**Decision:** The RL policy outputs a bounded residual (+-0.25 on throttles/tilts,
++-0.5 on surfaces) added to the baseline hover controller's commands, not direct
+actuator commands.
+
+**Experiment (Phase 4, 150k PPO steps each on the hover task, same hyperparameters,
+6 envs, seed 0 — rl/compare_probe.py over runs/probe_A, runs/probe_B):**
+
+| metric | Mode A (direct) | Mode B (residual) |
+|---|---|---|
+| episodes in budget | 2019 | 343 |
+| mean episode length | 106 / 750 steps | 527 / 750 steps |
+| best episode reward | -17.1 | +178.1 |
+
+Mode A spends the entire budget rediscovering hover and never survives an episode;
+Mode B starts from a flying controller, explores safely, and already produces
+high-reward episodes. With a one-night training budget the choice is clear-cut.
+Direct control remains an ablation candidate with a much larger budget.
+
+---
