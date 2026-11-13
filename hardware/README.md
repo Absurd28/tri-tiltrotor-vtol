@@ -72,7 +72,12 @@ L/D of 8 at 17 m/s — see `hardware/power_budget.py` for the method:
 | Thrust-to-weight | 1.79 | ≥ 1.6 for VTOL | ✓ |
 
 The hover endurance (8 min) is why the mission design keeps hover phases short and does the
-distance on the wing: one 400 m delivery round trip in the simulator uses ~13 % of the battery.
+distance on the wing. Measured in the simulator (`gcs/sim_core.py`, calm air): a 427 m delivery
+round trip takes 217 s and uses **22.7 %** of the battery, most of it in the four vertical
+phases (2 take-offs, 2 landings) and the precision approaches; a 50 m multicopter hop round trip
+uses 12.8 %. Rough radius estimate: ≈ 22 % fixed overhead per round trip + ≈ 2.6 % per km
+on the wing (176 W at 17 m/s) leaves (70 % − 22 %) / (2 × 2.6 %/km) ≈ 9 km with a 30 % reserve —
+an estimate only; the ground station caps missions at 2.5 km.
 
 **Wiring rules**
 - Battery → PM → PDB: **10 AWG** silicone, XT90 (peak ≈ 69 A). PDB → ESCs: **14 AWG**, XT60.

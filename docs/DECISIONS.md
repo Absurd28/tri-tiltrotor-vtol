@@ -259,3 +259,82 @@ bad" and the policy mean drifts away from zero. After the fix, a std-0.2 run at
 starts at zero *and* exploration is smaller than the baseline's error tolerance.
 
 ---
+
+## D-17: Checkpoint selection on validation seeds, test on held-out seeds
+
+**Decision:** the deployed/reported policy of each stage is the checkpoint with the
+best success rate on 20 **validation** episodes (seeds 20000–20019, domain
+randomization on), copied to `runs/<stage>/best.zip` by `rl/select_checkpoint.py`.
+The headline numbers come from 50 **test** episodes on disjoint seeds 10000–10049
+(`rl/evaluate.py`). The last checkpoint (`final.zip`) is reported alongside.
+
+**Reason:** PPO's last iterate is not its best: S1 hover at 1M steps scored 84 % on
+the test seeds while the 100k checkpoint had matched the baseline. Selecting on the
+test seeds would overstate performance; separate validation seeds keep the test
+numbers honest. This is standard early stopping / model selection.
+
+---
+
+## D-18: Ground station — reuse the validated controller in a rotated leg frame
+
+**Decision:** `gcs/sim_core.py` flies arbitrary-direction delivery legs by rotating
+the state into a frame whose +x points along the leg, instead of rewriting the
+transition controller for arbitrary headings.
+
+**Reason:** the transition logic (D-12) was diagnosed and validated for flight along
+world +x. Rotating the *input* reuses that validated behaviour exactly; actuator
+commands are body-frame and need no rotation; hover physics is yaw-invariant
+(verified: identical yaw statistics at headings 0/45/90/180°).
+
+**Mission-layer additions, each from a failure seen in testing:**
+1. Climb holding heading, then turn at 10°/s in hover (ALIGN) and settle 3 s before
+   the transition: a 180° yaw near the ground flipped the vehicle, a 30°/s turn
+   excited a diverging yaw oscillation (differential-tilt yaw saturates at ±7°), and
+   starting the transition while still yawing spun the aircraft.
+2. Back-transition starts 220 m out (mission: 140 m): after the payload drop the
+   aircraft is 0.5 kg lighter, stalls at ≈ 10.7 m/s instead of 11.5 m/s and overshot
+   the pad by 170 m.
+3. Precision approach is flown nose-first (turn on the spot, then translate): a
+   176 m tail-first approach destabilised yaw and crashed on landing.
+4. Two physics bugs surfaced and were fixed with regression tests: 0/0 NaN in the
+   slipstream model with motors stopped at rest; MuJoCo's cached
+   `body_subtreemass` not updated when the payload mass is released.
+
+**Result:** 427 m and 424 m round trips land 0.04 m from the destination pad and
+0.06–0.08 m from home; short multicopter hops 0.11–0.24 m.
+
+---
+
+## D-20: Do not change the baseline after RL training to fix the wind failure
+
+**Finding:** the 5 m/s wind mission fails at the final commit (it passed at Phase 3
+by chance; report §4). Root cause: hover yaw saturation against the fins'
+weathervane moment.
+
+**Decision:** keep the baseline as trained-against, mark the 5 m/s test as a strict
+expected failure with the diagnosis, add a 3 m/s test that passes, and report
+4–5 m/s as failing.
+
+**Reason:** the RL residual policies are trained on top of this exact baseline;
+changing the mixer now would silently invalidate every RL number. The one cheap
+fix tried (transfer clipped yaw tilt to the other nacelle) broke the calm-air
+altitude requirement (4.28 m > 3 m) and the CG-shift mission. The correct fix
+(weathervane yaw mode) is a controller feature plus a retrain — next iteration.
+
+---
+
+## D-19: Electronics — Pixhawk 6C Mini + Pi Zero 2 W companion, separate BECs
+
+**Decision:** PX4 flight controller holds all inner loops and the transition; the RL
+residual runs on a Raspberry Pi Zero 2 W (ONNX, 50 Hz) over MAVLink; servos and the
+companion computer get their own regulators.
+
+**Reason:** the baseline must keep flying if the companion computer fails (the RL
+residual is bounded and additive, D-15), so the safety-critical loops live on the
+FC. The Zero 2 W (11 g) instead of a Pi 5 (≈ 70 g with cooling) keeps avionics at
+274 g vs the 270 g budget line; the 128×128 MLP needs ≈ 0.2 ms per inference.
+Separate servo/companion BECs stop 6 A servo transients from browning out the Pi.
+A 360° scanning lidar matching the simulator's 8 range rays would exceed the mass
+budget by 40 % — recorded as a sim-to-real gap (hardware/README.md §5).
+
+---

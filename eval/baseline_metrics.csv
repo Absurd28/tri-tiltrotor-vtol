@@ -1,5 +1,6 @@
 tag,wind,cg_shift,completed,alt_dev_max,landing_err_m,duration_s,energy_used_pct
-calm,0.0,0.0,True,2.982,0.242,118.8,13.33
-wind5,5.0,0.0,True,5.670,22.797,118.7,15.34
-cg0.02,0.0,0.02,True,2.950,0.225,118.1,13.21
-video,0.0,0.0,True,2.982,0.242,118.8,13.33
+calm,0.0,0.0,True,2.984,0.223,118.6,13.30
+wind5,5.0,0.0,False,nan,nan,180.0,46.27
+cg0.02,0.0,0.02,True,2.950,0.229,118.1,13.21
+wind3,3.0,0.0,True,4.036,12.319,116.2,14.12
+wind4,4.0,0.0,False,nan,nan,180.0,34.39

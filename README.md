@@ -70,16 +70,31 @@ pytest -m "not slow"                                # physics + env tests (fast)
 pytest                                              # + full baseline missions (slow)
 python control/trim.py                              # eval/trim_table.csv, eval/tilt_corridor.png
 python eval/run_mission.py --tag calm               # eval/baseline_metrics.csv row + eval/mission_calm.png
-python eval/run_mission.py --tag wind5 --wind 5
+python eval/run_mission.py --tag wind3 --wind 3     # completes
+python eval/run_mission.py --tag wind4 --wind 4     # fails (known limitation, report §4)
+python eval/run_mission.py --tag wind5 --wind 5     # fails (known limitation, report §4)
 python eval/run_mission.py --tag cg0.02 --cg-shift 0.02
 MUJOCO_GL=egl python eval/run_mission.py --tag video --video docs/videos/mission_calm.mp4
 # RL (≈5.5 h on a laptop for the full chain, see C:/Temp/chain.sh equivalent below)
 python rl/train.py --task hover    --steps 1000000 --name s1_hover    --dr
 python rl/train.py --task waypoint --steps 2500000 --name s2_waypoint --dr --init runs/s1_hover/final.zip
 python rl/train.py --task obstacle --steps 2500000 --name s5_obstacle --dr --difficulty 0.4 --init runs/s2_waypoint/final.zip
-bash scripts/evaluate_all.sh                        # eval/rl_metrics.csv (50 seeded episodes each)
-python rl/export_onnx.py runs/s5_obstacle/final.zip # ONNX + parity check
+python rl/select_checkpoint.py --name s1_hover --task hover          # best.zip on validation seeds
+python rl/select_checkpoint.py --name s2_waypoint --task waypoint
+python rl/select_checkpoint.py --name s5_obstacle --task obstacle --difficulty 0.4
+bash scripts/evaluate_all.sh                        # eval/rl_metrics.csv (50 test episodes each)
+python rl/export_onnx.py runs/s5_obstacle/best.zip  # ONNX + parity check
+python hardware/power_budget.py                     # electrical budget tables
 ```
+
+### Fly the drone yourself (ground station)
+
+```bash
+bash scripts/run_gcs.sh        # then open http://localhost:8765
+```
+
+RC-style manual flight (on-screen sticks, keyboard or a USB RC transmitter) and automatic
+delivery missions — see [gcs/README.md](gcs/README.md). Electronics design: [hardware/README.md](hardware/README.md).
 
 ### Run MuJoCo viewer (requires display / VcXsrv on Windows)
 
@@ -96,7 +111,8 @@ sim/            Simulation physics (motor, aero, sensors)
 control/        Baseline PID controller and mixers
 rl/             Gymnasium environment and RL training
 eval/           Evaluation scripts and metrics
-hardware/       Hardware notes, BOM, wiring (later phases)
+gcs/            Ground station: real-time sim server + browser cockpit
+hardware/       Electronics: block diagram, BOM, power budget, pin map
 docs/           INSTALL_LOG.md, DECISIONS.md, report draft
 tests/          pytest tests for every physics block
 scripts/        Utility scripts (viewer, trim, render)

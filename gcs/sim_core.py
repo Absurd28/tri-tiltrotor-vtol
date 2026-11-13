@@ -133,8 +133,9 @@ def build_world_xml():
 
 # ---------------------------------------------------------------- policy --- #
 class ResidualPolicy:
-    """Loads runs/<stage>/final.onnx (preferred, like the companion computer)
-    or the SB3 zip. Returns None if nothing trained exists yet."""
+    """Loads runs/<stage>/best.onnx (validation-selected, D-17; ONNX as on the
+    companion computer), falling back to final/zip/latest checkpoint.
+    `available` is False if nothing trained exists yet."""
 
     SEARCH = ("s2_waypoint", "s1_hover")
 
@@ -143,7 +144,7 @@ class ResidualPolicy:
         cands = [Path(path)] if path else []
         for st in self.SEARCH:
             d = ROOT / "runs" / st
-            cands += [d / "final.onnx", d / "final.zip"]
+            cands += [d / "best.onnx", d / "best.zip", d / "final.onnx", d / "final.zip"]
             cands += sorted(d.glob("ckpt_*_steps.zip"),
                             key=lambda p: int(p.stem.split("_")[1]))[::-1][:1]
         for c in cands:
