@@ -190,7 +190,12 @@ $("btn-start").onclick = () => send({ type: "start", x: +$("dx").value, y: +$("d
 document.querySelectorAll(".presets button").forEach((b) => (b.onclick = () => {
   const [x, y] = b.dataset.p.split(",").map(Number); $("dx").value = x; $("dy").value = y; drawMap();
 }));
-document.querySelectorAll(".cam-switch button").forEach((b) => (b.onclick = () => send({ type: "cam", mode: b.dataset.cam })));
+document.querySelectorAll(".cam-switch button[data-cam]").forEach((b) => (b.onclick = () => send({ type: "cam", mode: b.dataset.cam })));
+$("btn-fs").onclick = () => {
+  const el = document.documentElement;
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+};
 
 function setSeg(id, v) {
   $(id).querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.v === v));
@@ -356,15 +361,20 @@ function drawHUD() {
     const hdg = (90 - tm.yaw + 360) % 360;
     ctx.fillStyle = "rgba(0,0,0,.45)"; ctx.fillRect(cx - 34, 8, 68, 22); ctx.fillStyle = g;
     ctx.fillText(`${hdg.toFixed(0).padStart(3, "0")}°`, cx, 24);
-    ctx.fillText(`${tm.mode}${tm.mode === "MANUAL" ? " · " + (tm.fw ? "WING" : tm.manual_mode) : ""} · ${tm.phase}`, cx, H - 44);
+    // phone pilot view: sticks/switches cover the bottom, buttons the top right
+    const compact = H < 520;
+    const yMode = compact ? 48 : H - 44;
+    ctx.fillText(`${tm.mode}${tm.mode === "MANUAL" ? " · " + (tm.fw ? "WING" : tm.manual_mode) : ""} · ${tm.phase}`, cx, yMode);
     ctx.textAlign = "left";
     // tilt gauge
-    ctx.fillText(`NACELLE ${tm.tilt[0]}°`, 12, H - 44);
-    ctx.fillRect(12, H - 36, 100 * Math.min(tm.tilt[0], 90) / 90, 4);
-    ctx.strokeRect(12, H - 36, 100, 4);
+    const yTilt = compact ? 48 : H - 44;
+    ctx.fillText(`NACELLE ${tm.tilt[0]}°`, 12, yTilt);
+    ctx.fillRect(12, yTilt + 8, 100 * Math.min(tm.tilt[0], 90) / 90, 4);
+    ctx.strokeRect(12, yTilt + 8, 100, 4);
     if (tm.rl_active) {
-      ctx.fillStyle = "rgba(63,185,80,.85)"; ctx.fillRect(W - 150, 40, 138, 20);
-      ctx.fillStyle = "#04111f"; ctx.fillText("RL ASSIST ACTIVE", W - 140, 54);
+      const [bx, by] = compact ? [12, 66] : [W - 150, 40];
+      ctx.fillStyle = "rgba(63,185,80,.85)"; ctx.fillRect(bx, by, 138, 20);
+      ctx.fillStyle = "#04111f"; ctx.fillText("RL ASSIST ACTIVE", bx + 10, by + 14);
     }
     if (tm.crashed) {
       ctx.fillStyle = "rgba(248,81,73,.9)"; ctx.font = "bold 28px system-ui"; ctx.textAlign = "center";
