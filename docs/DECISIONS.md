@@ -1,7 +1,7 @@
 # DECISIONS.md
 
 Design and engineering decisions for the Tilt-Tri-Rotor VTOL drone project.
-Each entry explains the choice, the alternatives considered, and the reason — for viva preparation.
+Each entry explains the choice, the alternatives considered, and the reason.
 
 ---
 
@@ -255,7 +255,7 @@ bad" and the policy mean drifts away from zero. After the fix, a std-0.2 run at
 100k steps scored 10/10 deterministic (reward 672). The failed run is kept in
 `runs/s1_hover_v0/` as evidence.
 
-**Viva angle:** residual RL only inherits the baseline's safety if the residual
+**Takeaway:** residual RL only inherits the baseline's safety if the residual
 starts at zero *and* exploration is smaller than the baseline's error tolerance.
 
 ---

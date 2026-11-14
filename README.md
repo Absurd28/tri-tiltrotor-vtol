@@ -5,7 +5,7 @@ motors, servos and aerodynamics, a cascaded PID controller that flies the hover-
 transition, PPO residual RL policies, a browser ground station for RC-style or autonomous
 delivery flights, and a full electronics design.
 
-*Final-year engineering project (7th semester): simulation, control and RL. Building and
+*Status: simulation, control and RL are complete. Building and
 flight-testing the real aircraft is the next phase — see [HARDWARE_BUILD.md](HARDWARE_BUILD.md).*
 
 ![The aircraft in cruise configuration](docs/renders/view_iso_cruise.png)
@@ -20,7 +20,7 @@ flight-testing the real aircraft is the next phase — see [HARDWARE_BUILD.md](H
 | Reinforcement learning | Gymnasium env, PPO residual policies on top of the baseline (hover, waypoints, obstacle avoidance), ONNX export | `rl/`, `policies/` |
 | Ground station | browser cockpit streamed from the live sim: Mode-2 sticks (screen, keyboard, phone or USB RC transmitter), manual and autonomous delivery modes | `gcs/` |
 | Electronics design | block diagram, pin map, wiring rules, parts list, power budget, failsafes | `hardware/` |
-| Report | design, results (including what did not work), 20 viva questions, decision log | `docs/` |
+| Report | design, results (including what did not work), 20-question FAQ, decision log | `docs/` |
 
 **Results at a glance** (all regenerate from the commands below):
 calm-air mission altitude deviation 2.98 m (< 3 m) and landing error 0.22 m (< 1 m);
@@ -199,7 +199,7 @@ nacelle tilt 0° = thrust up (hover), 90° = thrust forward (cruise).
 
 ## Documentation
 
-- [docs/report.md](docs/report.md) — the project report (results, limitations, viva Q&A)
+- [docs/report.md](docs/report.md) — the project report (results, limitations, FAQ)
 - [docs/DECISIONS.md](docs/DECISIONS.md) — every design decision with its reason
 - [docs/GUIDE.md](docs/GUIDE.md) — step-by-step: see the circuitry, model, simulation; fly from PC or phone
 - [hardware/README.md](hardware/README.md) — electronics design

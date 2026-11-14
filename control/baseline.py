@@ -1,6 +1,6 @@
 """Baseline flight controller: cascaded PID + mixer + transition scheduler.
 
-Architecture (viva):
+Architecture:
   position (P) -> velocity (PI) -> acceleration demand
   acceleration -> attitude setpoint + total-thrust demand (hover geometry)
   attitude (quaternion P) -> body-rate setpoint

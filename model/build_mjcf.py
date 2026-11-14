@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate the MJCF model of the tilt-tri-rotor VTOL from params.yaml.
 
-Design notes (viva):
+Design notes:
 - Every mass-budget line item is represented by one or more geoms with explicit
   mass, placed at its physical location. MuJoCo computes body inertia from the
   geoms, so the composite inertia emerges from the layout -- no hand-typed

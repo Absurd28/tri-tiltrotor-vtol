@@ -1,6 +1,6 @@
 """Motor + propeller model (per motor).
 
-Physics (viva notes):
+Physics notes:
 - ESC/motor speed dynamics: first-order lag, d(omega)/dt = (omega_cmd - omega)/tau.
 - Static thrust T = kT * omega^2, torque Q = kQ * omega^2 (kQ = kQ/kT ratio * kT).
 - Axial-inflow thrust decay: a fixed-pitch prop loses thrust as axial airspeed

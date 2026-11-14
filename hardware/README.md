@@ -1,7 +1,7 @@
 # Electronics & circuitry — tilt-tri-rotor VTOL
 
 Complete electrical design for the vehicle simulated in this repository. **Status: design only,
-not yet built or bench-tested** (Phases 9–10, next semester). Part names are *examples* of the
+not yet built or bench-tested** (Phases 9–10, the next phase). Part names are *examples* of the
 right class; any equivalent with the same interface, voltage and current rating works. Check every
 datasheet before ordering. All numbers below regenerate with `python hardware/power_budget.py`
 and are checked by `tests/test_hardware.py`.
@@ -138,7 +138,7 @@ Full parts list with interfaces: [`bom.csv`](bom.csv).
 
 The RL residual is bounded (±25 % throttle/tilt, ±50 % surfaces, same as `rl/env.py`) and is
 added on top of the baseline controller; if the companion stops sending, the FC flies the
-baseline alone. This "baseline as supervised fallback" is the deployment story from viva Q15.
+baseline alone. This "baseline as supervised fallback" is the deployment story from report Q15.
 
 ## 7. Bring-up checklist (props OFF until step 8)
 

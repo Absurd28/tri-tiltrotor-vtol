@@ -1,6 +1,6 @@
 # Tilt-Tri-Rotor VTOL UAV: Simulation, Baseline Control and Reinforcement Learning
 
-Draft report — 7th semester project. Every number cites its source file;
+Project report. Every number cites its source file;
 regenerate with the listed commands at the stated commit.
 
 ## 1. Introduction
@@ -12,7 +12,7 @@ simulation, a classical baseline controller, and reinforcement-learning
 policies for a three-motor tilt-rotor VTOL UAV with a 500 g payload,
 entirely in simulation, plus a browser ground station for manual practice and
 autonomous delivery missions, and the complete electronics design (building
-and flight-testing the hardware is next semester's scope).
+and flight-testing the hardware is the next phase).
 
 The vehicle: 3.527 kg, 1.6 m span, two wing motors on tilting nacelles
 (0–90°) and one tail motor between twin booms (0–30° planned tilt, parked
@@ -284,7 +284,7 @@ forward lidar + camera (a 360° lidar would bust the mass budget by 40 %).
 - Not modelled: prop gyroscopic moments, adverse yaw, slipstream swirl,
   ground effect.
 - Sim-to-real: all aero/propulsion parameters are ±30 % estimates until
-  bench tests (Phase 9/10 next semester).
+  bench tests (Phases 9–10).
 
 ## 9. Reproducibility
 
@@ -294,7 +294,7 @@ README (`scripts/check_model.py`, `pytest`, `eval/run_mission.py`,
 `control/trim.py`, `rl/select_checkpoint.py`, `scripts/evaluate_all.sh`,
 `hardware/power_budget.py`); seeds are fixed throughout.
 
-## Appendix A: 20 likely viva questions (with short answers)
+## Appendix A: 20 frequently asked questions (with short answers)
 
 1. **Why three motors instead of four?** Two tilting wing motors give cruise
    propulsion for free; the third (tail) motor completes hover pitch/thrust
@@ -358,7 +358,7 @@ README (`scripts/check_model.py`, `pytest`, `eval/run_mission.py`,
 13. **What is domain randomization for?** The aero/propulsion parameters
     are ±30 % estimates; training across mass/kT/lag/aero/wind variations
     optimizes expected performance over that uncertainty set — the standard
-    sim-to-real hedge before system identification next semester.
+    sim-to-real hedge before system identification in the next phase.
 
 14. **Why is the physics step 2 ms with control at 100 Hz?** 500 Hz gives
     ≥35 integration steps per motor time constant (70 ms) for stable servo

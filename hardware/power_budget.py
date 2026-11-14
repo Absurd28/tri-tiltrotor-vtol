@@ -3,7 +3,7 @@
 hardware/bom.csv. Writes hardware/power_budget.md (tables used in the
 README) and returns a dict for tests/test_hardware.py.
 
-Method (viva):
+Method:
   hover power per motor  P = T^1.5 / sqrt(2 rho A) / (FM * eta_motor)
       momentum theory ideal power, divided by a figure of merit FM (prop
       efficiency vs ideal, 0.6 for a hobby 12" prop) and motor/ESC efficiency

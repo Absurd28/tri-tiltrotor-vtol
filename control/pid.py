@@ -1,6 +1,6 @@
 """PID building blocks for the cascaded baseline controller.
 
-Gain philosophy (viva): each loop is a simple proportional (or PI) law whose
+Gain philosophy: each loop is a simple proportional (or PI) law whose
 closed-loop bandwidth is set by pole placement from the physical parameters
 (inertia for the rate loop), with each outer loop 2x slower than the loop it
 commands. No hand-twiddled magic numbers.

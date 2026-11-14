@@ -5,7 +5,7 @@
 Everything in the brief's simulation scope is built, tested and documented, with the
 pre-agreed cuts (RL transition → scripted; S6 → light DR; SITL skipped; 50 test episodes).
 Added on request: browser ground station (manual RC practice + autonomous delivery) and the
-complete electronics design. Hardware build/flight test = Phases 9–10, next semester.
+complete electronics design. Hardware build/flight test = Phases 9–10 (next phase).
 
 | Area | Result | Evidence |
 |---|---|---|
