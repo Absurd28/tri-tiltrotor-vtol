@@ -17,8 +17,8 @@ Wire gauge: battery/PM **10 AWG**, ESC leads **14 AWG** (≥ 25 % ampacity margi
 | Mass budget line | BOM total | params.yaml budget | Δ |
 |---|---|---|---|
 | battery | 700 g | 700 g | +0.0 % |
-| motors | 420 g | 420 g | +0.0 % |
+| motors | 450 g | 420 g | +7.1 % |
 | escs | 90 g | 90 g | +0.0 % |
 | tilt_servos | 135 g | 135 g | +0.0 % |
 | surface_servos | 72 g | 72 g | +0.0 % |
-| avionics_sensors | 274 g | 270 g | +1.5 % |
+| avionics_sensors | 289 g | 270 g | +7.0 % |

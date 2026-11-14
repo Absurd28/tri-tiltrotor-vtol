@@ -1,23 +1,23 @@
 subsystem,item,example_part,qty,unit_mass_g,budget_line,interface,notes
 Power,Flight battery 6S 5000 mAh LiPo,"Tattu / CNHL 6S 5000 mAh 45C, XT90",1,700,battery,XT90 to power module,22.2 V nominal 111 Wh; 45C = 225 A burst (>> 47 A max draw)
-Propulsion,Brushless motor ~460-500 KV,"SunnySky X4110S 460KV / T-Motor MN4014 400KV class",3,140,motors,3-phase to ESC,12x6.5 prop; KV from max_omega 889 rad/s at 6S under load
-Propulsion,ESC 40 A 6S BLHeli_32/AM32 (DShot),"Hobbywing XRotor 40A 6S / T-Motor F45A 6S",3,30,escs,DShot600 from FC AUX1-3,No BEC used; telemetry wire optional (ESC RPM/current)
-Actuation,Tilt servo (nacelles + tail pod),"45 g digital HV metal-gear, >=15 kg-cm, ~0.10 s/60 deg (e.g. KST MS325 / Savox SV-1257MG)",3,45,tilt_servos,PWM from FC MAIN1-3,Sim assumes 120 deg/s rate limit and 50 ms lag
-Actuation,Surface servo (ailerons/elevators/rudders),"12 g digital metal-gear (e.g. KST DS135MG / Emax ES09MD)",6,12,surface_servos,PWM from FC MAIN4-8 + AUX4,Pushrods to tail surfaces (D-07)
-Avionics,Flight controller with triple IMU (gyro + accel) and barometer,"Holybro Pixhawk 6C Mini (ICM-42688-P + BMI055 gyro/accel, MS5611 baro)",1,40,avionics_sensors,—,Mounted at the CG on vibration dampers (D-08); runs PX4 VTOL tiltrotor
+Propulsion,"Brushless motor ~400-460 KV, 6S-rated","T-Motor MN4014 400KV (4-8S, 150 g)",3,150,motors,3-phase to ESC,12x6.5 prop; confirm 2.1 kgf max thrust on a thrust stand (400KV may need a 13in prop or a 460KV motor)
+Propulsion,ESC 40 A 6S BLHeli_32/AM32 (DShot),"T-Motor AIR 40A 2-6S (no BEC, PWM up to 621 Hz)",3,30,escs,PWM 400 Hz from FC AUX1-3 (DShot600 if a BLHeli_32/AM32 ESC is used),No BEC used; telemetry wire optional (ESC RPM/current)
+Actuation,Tilt servo (nacelles + tail pod),"45 g class digital HV metal-gear servo, >=15 kg-cm, ~0.10 s/60 deg (size it from the measured hinge torque)",3,45,tilt_servos,PWM from FC MAIN1-3,Sim assumes 120 deg/s rate limit and 50 ms lag
+Actuation,Surface servo (ailerons/elevators/rudders),12-15 g digital metal-gear servo (e.g. Emax ES08MD II / ES09MD class),6,12,surface_servos,PWM from FC MAIN4-8 + AUX4,Pushrods to tail surfaces (D-07)
+Avionics,Flight controller with triple IMU (gyro + accel) and barometer,"Holybro Pixhawk 6C Mini (ICM-42688-P + BMI088 gyro/accel, MS5611 baro)",1,40,avionics_sensors,—,Mounted at the CG on vibration dampers (D-08); runs PX4 VTOL tiltrotor
 Avionics,GNSS receiver + compass + safety switch,"Holybro M10 GPS (u-blox M10, IST8310)",1,33,avionics_sensors,FC GPS1 (UART + I2C),Mast-mounted above the wing away from power wires
-Avionics,Digital airspeed sensor + pitot tube,"Holybro MS4525DO digital airspeed + pitot",1,15,avionics_sensors,FC I2C,Pitot at x=0.45 m nose (model site 'pitot')
-Avionics,Downward lidar rangefinder (landing),"Benewake TF-Luna (0.2-8 m)",1,5,avionics_sensors,FC UART4 (GPS2 port),Model site 'range_down'; terrain-relative landing
-Avionics,Forward lidar rangefinder (obstacles),"Benewake TF-Luna (0.2-8 m)",1,5,avionics_sensors,Companion I2C,Model site 'range_fwd'; sim uses 8 horizontal rays (see README)
-Avionics,Companion computer (runs ONNX RL policy),"Raspberry Pi Zero 2 W",1,11,avionics_sensors,FC TELEM2 (MAVLink 921600),Runs onnxruntime at 50 Hz (128x128 MLP ~0.2 ms)
-Avionics,Camera module,"Raspberry Pi Camera Module 3 (IMX708 12 MP autofocus)",1,4,avionics_sensors,Companion CSI-2,Precision landing (AprilTag on pad) + video downlink
-Avionics,Gyro-stabilised FPV camera + VTX (manual practice flying),"Caddx Ant + 5.8 GHz 25-400 mW VTX",1,12,avionics_sensors,5 V BEC; OSD from FC UART,Optional; legal VTX power per local rules
-Comms,RC receiver,"RadioMaster RP1 ExpressLRS 2.4 GHz",1,2,avionics_sensors,FC TELEM3 (CRSF),Pairs with an EdgeTX transmitter (same radio works as USB joystick in the simulator)
-Comms,Telemetry radio,"Holybro SiK Telemetry Radio V3 (433/868/915 MHz per region)",1,25,avionics_sensors,FC TELEM1 (MAVLink 57600),Ground side: USB to laptop running QGroundControl
-Power,Power module (V/I sense + 5.3 V FC supply),"Holybro PM02 V3 (2-12S, 120 A)",1,20,avionics_sensors,FC POWER1,Battery current/voltage to PX4 battery estimator
-Power,Power distribution board,"Matek FCHUB-12S / XT60 PDB",1,15,avionics_sensors,PM out -> 3 ESCs,Keep ESC leads short; low-ESR cap on each ESC
-Power,Servo UBEC 7.4 V 10 A,"Hobbywing UBEC 10A HV",1,20,avionics_sensors,FC servo rail (+ / -),Feeds all 10 servos; FC rail is NOT powered by the PM
-Power,Companion/camera UBEC 5.1 V 3 A,"Matek UBEC Duo / Pololu 5V 3A",1,8,avionics_sensors,Pi 5V pin + FPV cam/VTX,Separate from servo rail (servo noise resets the Pi)
-Payload,Payload release (servo latch),"MG90S metal-gear micro servo + 3D-printed hook",1,14,avionics_sensors,FC AUX5 (PX4 gripper),MAV_CMD_DO_GRIPPER at the pad
-Safety,Buzzer + arming LED,"PX4 standard buzzer",1,5,avionics_sensors,FC BUZZER port,Arming/failsafe tones
+Avionics,Digital airspeed sensor + pitot tube,Holybro MS4525DO digital airspeed + pitot,1,15,avionics_sensors,FC I2C,Pitot at x=0.45 m nose (model site 'pitot')
+Avionics,Downward lidar rangefinder (landing),Benewake TF-Luna (0.2-8 m),1,5,avionics_sensors,FC UART4 (GPS2 port),Model site 'range_down'; terrain-relative landing
+Avionics,Forward lidar rangefinder (obstacles),Benewake TF-Luna (0.2-8 m),1,5,avionics_sensors,Companion I2C,Model site 'range_fwd'; sim uses 8 horizontal rays (see README)
+Avionics,Companion computer (runs ONNX RL policy),Raspberry Pi Zero 2 W,1,11,avionics_sensors,FC TELEM2 (MAVLink 921600),Runs onnxruntime at 50 Hz (128x128 MLP ~0.2 ms)
+Avionics,Camera module,Raspberry Pi Camera Module 3 (IMX708 12 MP autofocus),1,4,avionics_sensors,Companion CSI-2,Precision landing (AprilTag on pad) + video downlink
+Avionics,Gyro-stabilised FPV camera + VTX (manual practice flying),Caddx Ant + 5.8 GHz 25-400 mW VTX,1,12,avionics_sensors,5 V BEC; OSD from FC UART,Optional; legal VTX power per local rules
+Comms,RC receiver,RadioMaster RP1 ExpressLRS 2.4 GHz,1,2,avionics_sensors,FC TELEM3 (CRSF),Pairs with an EdgeTX transmitter (same radio works as USB joystick in the simulator)
+Comms,Telemetry radio,Holybro SiK Telemetry Radio V3 (433/868/915 MHz per region),1,25,avionics_sensors,FC TELEM1 (MAVLink 57600),Ground side: USB to laptop running QGroundControl
+Power,Power module (V/I sense + 5.3 V FC supply),"Holybro PM02 V3 (2-12S, 60 A cont. / 100 A burst)",1,20,avionics_sensors,FC POWER1,Battery current/voltage to PX4 battery estimator; replace the 30 A XT60 lead with 10 AWG + XT90 (hover 29 A, peak 69 A)
+Power,Power distribution board,Matek FCHUB-12S / XT60 PDB,1,15,avionics_sensors,PM out -> 3 ESCs,Keep ESC leads short; low-ESR cap on each ESC
+Power,Servo UBEC 7.4 V 10 A,Hobbywing UBEC 10A HV,1,35,avionics_sensors,FC servo rail (+ / -),Feeds all 10 servos; FC rail is NOT powered by the PM
+Power,Companion/camera UBEC 5.1 V 3 A,Matek UBEC Duo / Pololu 5V 3A,1,8,avionics_sensors,Pi 5V pin + FPV cam/VTX,Separate from servo rail (servo noise resets the Pi)
+Payload,Payload release (servo latch),MG90S metal-gear micro servo + 3D-printed hook,1,14,avionics_sensors,FC AUX5 (PX4 gripper),MAV_CMD_DO_GRIPPER at the pad
+Safety,Buzzer + arming LED,PX4 standard buzzer,1,5,avionics_sensors,FC BUZZER port,Arming/failsafe tones
 Wiring,Wiring harness / connectors / heatshrink,"10 AWG battery/PDB, 14 AWG ESC, 22-26 AWG signal",1,40,avionics_sensors,—,Twisted signal pairs; ferrite on GPS lead

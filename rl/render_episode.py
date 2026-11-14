@@ -21,7 +21,8 @@ sys.path.insert(0, str(ROOT))
 
 from rl.env import VTOLEnv  # noqa: E402
 
-FFMPEG = "/home/code_hack_absurd/miniconda3/envs/drone311/bin/ffmpeg"
+import shutil  # noqa: E402
+FFMPEG = shutil.which("ffmpeg") or str(Path(sys.prefix) / "bin" / "ffmpeg")
 
 
 def main():

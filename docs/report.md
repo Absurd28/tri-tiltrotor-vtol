@@ -245,7 +245,7 @@ and streams rendered video and telemetry to a browser cockpit.
 
 `hardware/` contains the block diagram, pin map, wiring rules, BOM and a
 power-budget script (checked by `tests/test_hardware.py`). Pixhawk 6C Mini flight
-controller (triple IMU: ICM-42688-P + BMI055 gyros/accelerometers, MS5611 baro),
+controller (triple IMU: ICM-42688-P + BMI088 gyros/accelerometers, MS5611 baro),
 u-blox M10 GNSS + compass, MS4525DO airspeed, TF-Luna lidars (down, forward),
 Raspberry Pi Zero 2 W companion computer running the ONNX RL policy, Camera
 Module 3 for pad detection, FPV camera + VTX, ExpressLRS RC, SiK telemetry,
@@ -258,7 +258,7 @@ Module 3 for pad detection, FPV camera + VTX, ExpressLRS RC, SiK telemetry,
 | ESC margin over max motor current (23 A) | 1.72× | ≥ 1.5× ✓ |
 | battery burst margin over 69 A peak | 3.3× | ≥ 2× ✓ |
 | thrust-to-weight | 1.79 | ≥ 1.6 ✓ |
-| avionics mass vs budget line | 274 g / 270 g (+1.5 %) | ≤ 10 % ✓ |
+| avionics / motor mass vs budget lines | 289 g / 270 g (+7.0 %), 450 g / 420 g (+7.1 %) | ≤ 10 % ✓ |
 
 Every simulated block maps to a part with a named calibration test for Phase 9
 (hardware/README.md §5). The largest sim-to-real gap is perception: the RL
@@ -389,7 +389,7 @@ README (`scripts/check_model.py`, `pytest`, `eval/run_mission.py`,
 
 19. **Why is the companion computer a Pi Zero 2 W, not a Pi 5 or Jetson?** The
     policy is a 128×128 MLP (≈ 0.2 ms per step); mass is the constraint — the
-    avionics line is already at 274 g of a 270 g budget. Inner loops stay on the
+    avionics line is already at 289 g of a 270 g budget. Inner loops stay on the
     flight controller so the aircraft keeps flying if the companion fails (D-19).
 
 20. **What happens to the aircraft when the payload is released?** 0.5 kg leaves

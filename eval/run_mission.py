@@ -173,7 +173,8 @@ def main():
         tmp = Path(tempfile.mkdtemp())
         for i, fr in enumerate(frames):
             plt.imsave(tmp / f"f{i:05d}.png", fr)
-        ff = "/home/code_hack_absurd/miniconda3/envs/drone311/bin/ffmpeg"
+        import shutil
+        ff = shutil.which("ffmpeg") or str(Path(sys.prefix) / "bin" / "ffmpeg")
         subprocess.run([ff, "-y", "-framerate", "20", "-i",
                         str(tmp / "f%05d.png"), "-c:v", "libx264",
                         "-pix_fmt", "yuv420p", args.video], check=True,

@@ -6,7 +6,7 @@
 2. Run:
    ```bash
    export PATH="$HOME/miniconda3/envs/drone311/bin:$PATH"
-   cd "/mnt/c/Users/Aryan's_WorkSpace/Desktop/Drone_7th_sem"
+   cd ~/tri-tiltrotor-vtol        # the folder you cloned the repo into
    ```
    All commands below are typed in this terminal unless they say *Windows*.
 

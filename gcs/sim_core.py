@@ -134,7 +134,8 @@ def build_world_xml():
 # ---------------------------------------------------------------- policy --- #
 class ResidualPolicy:
     """Loads runs/<stage>/best.onnx (validation-selected, D-17; ONNX as on the
-    companion computer), falling back to final/zip/latest checkpoint.
+    companion computer), falling back to final/zip/latest checkpoint, then to
+    the copies shipped in policies/ (a fresh clone has no runs/).
     `available` is False if nothing trained exists yet."""
 
     # S1 hover is the residual that tested better than the baseline in the
@@ -149,6 +150,8 @@ class ResidualPolicy:
             cands += [d / "best.onnx", d / "best.zip", d / "final.onnx", d / "final.zip"]
             cands += sorted(d.glob("ckpt_*_steps.zip"),
                             key=lambda p: int(p.stem.split("_")[1]))[::-1][:1]
+        # shipped copies of the selected policies (runs/ is not in git)
+        cands += [ROOT / "policies" / f"{st}.onnx" for st in self.SEARCH]
         for c in cands:
             if c.exists():
                 self._load(c)

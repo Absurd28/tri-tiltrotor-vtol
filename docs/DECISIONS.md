@@ -353,7 +353,7 @@ companion computer get their own regulators.
 **Reason:** the baseline must keep flying if the companion computer fails (the RL
 residual is bounded and additive, D-15), so the safety-critical loops live on the
 FC. The Zero 2 W (11 g) instead of a Pi 5 (≈ 70 g with cooling) keeps avionics at
-274 g vs the 270 g budget line; the 128×128 MLP needs ≈ 0.2 ms per inference.
+289 g vs the 270 g budget line (+7 %, inside the 10 % tolerance); the 128×128 MLP needs ≈ 0.2 ms per inference.
 Separate servo/companion BECs stop 6 A servo transients from browning out the Pi.
 A 360° scanning lidar matching the simulator's 8 range rays would exceed the mass
 budget by 40 % — recorded as a sim-to-real gap (hardware/README.md §5).

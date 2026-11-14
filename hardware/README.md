@@ -16,7 +16,7 @@ the two tilting wing motors and the tail motor. Two separate **UBECs** make 7.4 
 servos (3 tilt, 6 control surfaces, 1 payload latch) and 5.1 V for the companion computer and
 cameras, so servo current spikes never brown out the computers. The **Pixhawk 6C Mini** flight
 controller holds the attitude/rate loops and the transition logic (PX4 *VTOL tiltrotor*), using
-its **gyroscopes and accelerometers** (ICM-42688-P primary, BMI055 redundant), barometer, GNSS +
+its **gyroscopes and accelerometers** (ICM-42688-P primary, BMI088 redundant), barometer, GNSS +
 compass, airspeed sensor and a downward lidar. A **Raspberry Pi Zero 2 W** companion computer
 runs the trained **RL residual policy** (the ONNX file exported by `rl/export_onnx.py`) at 50 Hz
 and the **Camera Module 3** for pad detection, and talks to the FC over MAVLink. The pilot flies
@@ -26,9 +26,9 @@ with an **ExpressLRS** RC link; a **SiK telemetry radio** links QGroundControl.
 
 | FC port | Connected to | Signal | Notes |
 |---|---|---|---|
-| FMU AUX1 | ESC left wing motor | DShot600 | motor 1, **CCW** (prop_spin +1) |
-| FMU AUX2 | ESC right wing motor | DShot600 | motor 2, **CW** |
-| FMU AUX3 | ESC tail motor | DShot600 | motor 3 |
+| FMU AUX1 | ESC left wing motor | PWM 400 Hz (DShot600 with a BLHeli_32 ESC) | motor 1, **CCW** (prop_spin +1) |
+| FMU AUX2 | ESC right wing motor | PWM 400 Hz (or DShot600) | motor 2, **CW** |
+| FMU AUX3 | ESC tail motor | PWM 400 Hz (or DShot600) | motor 3 |
 | FMU AUX4 | Rudder servo right | PWM 50 Hz | mirrors rudder left |
 | FMU AUX5 | Payload release servo | PWM 50 Hz | PX4 gripper function |
 | FMU AUX6 | spare | — | |
@@ -80,7 +80,7 @@ on the wing (176 W at 17 m/s) leaves (70 % − 22 %) / (2 × 2.6 %/km) ≈ 9 km 
 an estimate only; the ground station caps missions at 2.5 km.
 
 **Wiring rules**
-- Battery → PM → PDB: **10 AWG** silicone, XT90 (peak ≈ 69 A). PDB → ESCs: **14 AWG**, XT60.
+- Battery → PM → PDB: **10 AWG** silicone, XT90 (peak ≈ 69 A). The PM02 V3 is rated 60 A continuous / 100 A burst, but its pre-soldered XT60 lead only 30 A — replace the lead and connectors before flight. PDB → ESCs: **14 AWG**, XT60.
 - ESC leads as short as possible; 25 V 470 µF low-ESR capacitor at each ESC input (long leads
   through the tilting nacelle hinge add inductance → voltage spikes).
 - Nacelle hinge: motor phase wires pass through a service loop with strain relief; the loop must
@@ -97,13 +97,13 @@ All electronics come out of the airframe mass budget in `params/params.yaml`:
 | Mass budget line | BOM total | params.yaml budget | Δ |
 |---|---|---|---|
 | battery | 700 g | 700 g | +0.0 % |
-| motors | 420 g | 420 g | +0.0 % |
+| motors | 450 g | 420 g | +7.1 % |
 | escs | 90 g | 90 g | +0.0 % |
 | tilt_servos | 135 g | 135 g | +0.0 % |
 | surface_servos | 72 g | 72 g | +0.0 % |
-| avionics_sensors | 274 g | 270 g | +1.5 % |
+| avionics_sensors | 289 g | 270 g | +7.0 % |
 
-Avionics is 4 g over the budget line (inside the ±10 % tolerance used for the mass acceptance).
+Motors (+30 g, the 150 g MN4014) and avionics (+19 g, mostly the 35 g servo UBEC) are each ~7 % over their budget lines — inside the ±10 % tolerance of the mass acceptance, but the next model iteration should update `params.yaml` to the measured masses.
 A Raspberry Pi 5 instead of the Zero 2 W (for heavier vision) would add ~60 g; a 360° scanning
 lidar (RPLIDAR C1, 110 g) to match the simulator's 8 horizontal range rays exactly would push the
 avionics line 40 % over budget — that trade-off is why the hardware carries one forward lidar +

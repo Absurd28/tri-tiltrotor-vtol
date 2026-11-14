@@ -42,7 +42,7 @@
   <rect x="430" y="300" width="380" height="150" rx="12" fill="#e9f2fc" stroke="#2f7fd6" stroke-width="2"/>
   <text x="446" y="326" class="h" font-size="16">Flight controller · Pixhawk 6C Mini</text>
   <text x="446" y="346" class="s">STM32H743 · PX4 VTOL tiltrotor (cascaded PID, mixers, transition)</text>
-  <text x="446" y="368" class="lbl">• Gyro + accelerometer: ICM-42688-P (primary) + BMI055 (redundant)</text>
+  <text x="446" y="368" class="lbl">• Gyro + accelerometer: ICM-42688-P (primary) + BMI088 (redundant)</text>
   <text x="446" y="386" class="lbl">• Barometer MS5611 · mounted at CG on dampers</text>
   <text x="446" y="404" class="lbl">• FMU AUX1-3: DShot motors · AUX4-5: rudder R, payload</text>
   <text x="446" y="422" class="lbl">• IO MAIN1-8: tilt L/R/T, aileron L/R, elevator L/R, rudder L</text>

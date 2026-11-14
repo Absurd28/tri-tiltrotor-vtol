@@ -14,7 +14,7 @@ complete electronics design. Hardware build/flight test = Phases 9–10, next se
 | Baseline (P3) | calm mission alt dev 2.98 m (< 3), landing 0.22 m (< 1); CG +2 cm ✓; 3 m/s wind ✓; **4–5 m/s wind ✗** | `eval/baseline_metrics.csv`, report §4 |
 | RL (P4–5) | **thresholds NOT met**: S1 86 % (≥ 95), S5 8 % / 52 % coll. (≥ 85 / ≤ 10); hover tracking −26 % | `eval/rl_metrics.csv`, report §5 |
 | Ground station | manual (ANGLE/POSITION/wing) + auto delivery; round trips land 0.04–0.24 m from pads | `gcs/`, `tests/test_gcs.py` |
-| Electronics | full design; ESC 1.72×, BEC 1.67×, battery 3.3× margins; T/W 1.79; avionics +1.5 % mass | `hardware/`, `tests/test_hardware.py` |
+| Electronics | full design; ESC 1.72×, BEC 1.67×, battery 3.3× margins; T/W 1.79; avionics +7 % and motors +7 % mass (within 10 %) | `hardware/`, `tests/test_hardware.py` |
 | Tests | 69 passed, 1 strict xfail (5 m/s wind, documented) | `pytest` |
 
 ## Open issues (ordered by value)

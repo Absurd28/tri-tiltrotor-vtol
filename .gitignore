@@ -18,6 +18,7 @@ checkpoints/
 *.zip
 *.onnx
 videos/
+!docs/videos/
 eval_results/
 
 # OS
@@ -32,4 +33,7 @@ desktop.ini
 # Temp
 *.tmp
 *.bak
-docs/_install_sb3.shMUJOCO_LOG.TXT
+MUJOCO_LOG.TXT
+
+# Claude Code local settings
+.claude/
