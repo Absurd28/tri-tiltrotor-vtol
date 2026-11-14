@@ -36,5 +36,5 @@ desktop.ini
 *.bak
 MUJOCO_LOG.TXT
 
-# Claude Code local settings
+# Local tool settings
 .claude/
