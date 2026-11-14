@@ -28,7 +28,7 @@ bash /tmp/miniconda.sh -b -p ~/miniconda3
 ~/miniconda3/bin/conda create -n drone311 python=3.11 -c conda-forge -y
 
 # 3. Activate and install packages
-source ~/miniconda3/bin/activate drone311
+export PATH="$HOME/miniconda3/envs/drone311/bin:$PATH"
 cd /mnt/c/Users/<YOUR_USERNAME>/Desktop/Drone_7th_sem  # adjust path
 
 pip install -r requirements.txt          # pinned versions (torch comes with SB3)
@@ -43,13 +43,13 @@ Exact versions actually installed are logged in `docs/INSTALL_LOG.md`.
 
 ```bash
 wsl -d Ubuntu-26.04   # open WSL terminal from PowerShell
-source ~/miniconda3/bin/activate drone311
+export PATH="$HOME/miniconda3/envs/drone311/bin:$PATH"
 cd /mnt/c/Users/<YOUR_USERNAME>/Desktop/Drone_7th_sem
 ```
 
 Or add this alias to your WSL `~/.bashrc`:
 ```bash
-alias drone='source ~/miniconda3/bin/activate drone311 && cd /mnt/c/Users/<YOUR_USERNAME>/Desktop/Drone_7th_sem'
+alias drone='export PATH="$HOME/miniconda3/envs/drone311/bin:$PATH" && cd /mnt/c/Users/<YOUR_USERNAME>/Desktop/Drone_7th_sem'
 ```
 
 ### Run tests

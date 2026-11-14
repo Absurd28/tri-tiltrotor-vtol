@@ -5,7 +5,7 @@
 1. Press **Start**, type **Ubuntu**, open it (or in PowerShell: `wsl -d Ubuntu-26.04`).
 2. Run:
    ```bash
-   source ~/miniconda3/bin/activate drone311
+   export PATH="$HOME/miniconda3/envs/drone311/bin:$PATH"
    cd "/mnt/c/Users/Aryan's_WorkSpace/Desktop/Drone_7th_sem"
    ```
    All commands below are typed in this terminal unless they say *Windows*.
