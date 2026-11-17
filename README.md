@@ -129,7 +129,7 @@ python -c "import torch; print(torch.cuda.is_available())"
 ```bash
 bash scripts/run_gcs.sh
 ```
-Open **http://localhost:8765**. Arm (SA), push the left stick up to climb, use the right stick to
+Open **http://localhost:0000**. Arm (SA), push the left stick up to climb, use the right stick to
 fly. Switch SB to AUTO and click the map for an autonomous delivery. Controls, phone setup and
 the delivery mission are explained in [gcs/README.md](gcs/README.md) and
 [docs/GUIDE.md](docs/GUIDE.md).
